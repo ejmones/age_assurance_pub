@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+
+
+</head>
+<body>
+<div id="wetgwlegpt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  <style>#wetgwlegpt table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wetgwlegpt thead, #wetgwlegpt tbody, #wetgwlegpt tfoot, #wetgwlegpt tr, #wetgwlegpt td, #wetgwlegpt th {
+  border-style: none;
+}
+
+#wetgwlegpt p {
+  margin: 0;
+  padding: 0;
+}
+
+#wetgwlegpt .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wetgwlegpt .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wetgwlegpt .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wetgwlegpt .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wetgwlegpt .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wetgwlegpt .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wetgwlegpt .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wetgwlegpt .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wetgwlegpt .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wetgwlegpt .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wetgwlegpt .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wetgwlegpt .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wetgwlegpt .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wetgwlegpt .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wetgwlegpt .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wetgwlegpt .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wetgwlegpt .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wetgwlegpt .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wetgwlegpt .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wetgwlegpt .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wetgwlegpt .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wetgwlegpt .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wetgwlegpt .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wetgwlegpt .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wetgwlegpt .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wetgwlegpt .gt_left {
+  text-align: left;
+}
+
+#wetgwlegpt .gt_center {
+  text-align: center;
+}
+
+#wetgwlegpt .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wetgwlegpt .gt_font_normal {
+  font-weight: normal;
+}
+
+#wetgwlegpt .gt_font_bold {
+  font-weight: bold;
+}
+
+#wetgwlegpt .gt_font_italic {
+  font-style: italic;
+}
+
+#wetgwlegpt .gt_super {
+  font-size: 65%;
+}
+
+#wetgwlegpt .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wetgwlegpt .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wetgwlegpt .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wetgwlegpt .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wetgwlegpt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wetgwlegpt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wetgwlegpt .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wetgwlegpt .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wetgwlegpt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="10" class="gt_heading gt_title gt_font_normal" style>Regression Analysis Summary</td>
+    </tr>
+    <tr class="gt_heading">
+      <td colspan="10" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Australia : Significance of support towards age verification methods</td>
+    </tr>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Method">Method</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Term">Term</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Estimate">Estimate</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Std. Error">Std. Error</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Statistic">Statistic</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="P-Value">P-Value</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="R&lt;sup&gt;2&lt;/sup&gt;">R<sup>2</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Adj R&lt;sup&gt;2&lt;/sup&gt;">Adj R<sup>2</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="F-Value">F-Value</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Significant">Significant</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.050</td>
+<td headers="std.error" class="gt_row gt_right">0.277</td>
+<td headers="statistic" class="gt_row gt_right">14.632</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.155</td>
+<td headers="std.error" class="gt_row gt_right">0.301</td>
+<td headers="statistic" class="gt_row gt_right">−0.514</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.608</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">0.021</td>
+<td headers="std.error" class="gt_row gt_right">0.365</td>
+<td headers="statistic" class="gt_row gt_right">0.057</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.955</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.120</td>
+<td headers="std.error" class="gt_row gt_right">0.425</td>
+<td headers="statistic" class="gt_row gt_right">0.283</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.778</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.138</td>
+<td headers="std.error" class="gt_row gt_right">0.645</td>
+<td headers="statistic" class="gt_row gt_right">0.215</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.830</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">1.461</td>
+<td headers="std.error" class="gt_row gt_right">0.975</td>
+<td headers="statistic" class="gt_row gt_right">1.499</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.136</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.511</td>
+<td headers="std.error" class="gt_row gt_right">0.229</td>
+<td headers="statistic" class="gt_row gt_right">−2.233</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.027</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−2.532</td>
+<td headers="std.error" class="gt_row gt_right">0.972</td>
+<td headers="statistic" class="gt_row gt_right">−2.604</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.010</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.338</td>
+<td headers="std.error" class="gt_row gt_right">0.794</td>
+<td headers="statistic" class="gt_row gt_right">−0.426</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.671</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online gaming sites</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.082</td>
+<td headers="std.error" class="gt_row gt_right">0.283</td>
+<td headers="statistic" class="gt_row gt_right">0.290</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.772</td>
+<td headers="r.squared" class="gt_row gt_right">0.090</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.031</td>
+<td headers="f.value" class="gt_row gt_right">1.525</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.820</td>
+<td headers="std.error" class="gt_row gt_right">0.208</td>
+<td headers="statistic" class="gt_row gt_right">23.191</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.405</td>
+<td headers="std.error" class="gt_row gt_right">0.226</td>
+<td headers="statistic" class="gt_row gt_right">−1.788</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.076</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.547</td>
+<td headers="std.error" class="gt_row gt_right">0.274</td>
+<td headers="statistic" class="gt_row gt_right">−1.997</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.048</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.247</td>
+<td headers="std.error" class="gt_row gt_right">0.319</td>
+<td headers="statistic" class="gt_row gt_right">−0.772</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.441</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.602</td>
+<td headers="std.error" class="gt_row gt_right">0.484</td>
+<td headers="statistic" class="gt_row gt_right">−1.244</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.216</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.584</td>
+<td headers="std.error" class="gt_row gt_right">0.732</td>
+<td headers="statistic" class="gt_row gt_right">−0.797</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.427</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.236</td>
+<td headers="std.error" class="gt_row gt_right">0.172</td>
+<td headers="statistic" class="gt_row gt_right">−1.376</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.171</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−0.995</td>
+<td headers="std.error" class="gt_row gt_right">0.730</td>
+<td headers="statistic" class="gt_row gt_right">−1.362</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.175</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.170</td>
+<td headers="std.error" class="gt_row gt_right">0.596</td>
+<td headers="statistic" class="gt_row gt_right">−0.285</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.776</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Adult content/pornography</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.384</td>
+<td headers="std.error" class="gt_row gt_right">0.212</td>
+<td headers="statistic" class="gt_row gt_right">1.809</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.073</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.020</td>
+<td headers="f.value" class="gt_row gt_right">1.338</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.817</td>
+<td headers="std.error" class="gt_row gt_right">0.165</td>
+<td headers="statistic" class="gt_row gt_right">29.109</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.378</td>
+<td headers="std.error" class="gt_row gt_right">0.180</td>
+<td headers="statistic" class="gt_row gt_right">−2.097</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.038</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.110</td>
+<td headers="std.error" class="gt_row gt_right">0.218</td>
+<td headers="statistic" class="gt_row gt_right">−0.506</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.614</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.024</td>
+<td headers="std.error" class="gt_row gt_right">0.254</td>
+<td headers="statistic" class="gt_row gt_right">−0.095</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.925</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.146</td>
+<td headers="std.error" class="gt_row gt_right">0.386</td>
+<td headers="statistic" class="gt_row gt_right">0.380</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.705</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.109</td>
+<td headers="std.error" class="gt_row gt_right">0.583</td>
+<td headers="statistic" class="gt_row gt_right">0.187</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.852</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">0.074</td>
+<td headers="std.error" class="gt_row gt_right">0.137</td>
+<td headers="statistic" class="gt_row gt_right">0.538</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.591</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.116</td>
+<td headers="std.error" class="gt_row gt_right">0.581</td>
+<td headers="statistic" class="gt_row gt_right">−1.920</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.057</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.654</td>
+<td headers="std.error" class="gt_row gt_right">0.475</td>
+<td headers="statistic" class="gt_row gt_right">−1.379</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.170</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gambling</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.035</td>
+<td headers="std.error" class="gt_row gt_right">0.169</td>
+<td headers="statistic" class="gt_row gt_right">0.208</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.836</td>
+<td headers="r.squared" class="gt_row gt_right">0.095</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.037</td>
+<td headers="f.value" class="gt_row gt_right">1.627</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.791</td>
+<td headers="std.error" class="gt_row gt_right">0.160</td>
+<td headers="statistic" class="gt_row gt_right">29.982</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.272</td>
+<td headers="std.error" class="gt_row gt_right">0.174</td>
+<td headers="statistic" class="gt_row gt_right">−1.567</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.119</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">0.182</td>
+<td headers="std.error" class="gt_row gt_right">0.210</td>
+<td headers="statistic" class="gt_row gt_right">0.866</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.388</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.077</td>
+<td headers="std.error" class="gt_row gt_right">0.246</td>
+<td headers="statistic" class="gt_row gt_right">0.313</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.754</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.238</td>
+<td headers="std.error" class="gt_row gt_right">0.372</td>
+<td headers="statistic" class="gt_row gt_right">0.640</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.523</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.233</td>
+<td headers="std.error" class="gt_row gt_right">0.563</td>
+<td headers="statistic" class="gt_row gt_right">0.413</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.680</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.024</td>
+<td headers="std.error" class="gt_row gt_right">0.132</td>
+<td headers="statistic" class="gt_row gt_right">−0.179</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.858</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.193</td>
+<td headers="std.error" class="gt_row gt_right">0.561</td>
+<td headers="statistic" class="gt_row gt_right">−2.125</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.035</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.094</td>
+<td headers="std.error" class="gt_row gt_right">0.458</td>
+<td headers="statistic" class="gt_row gt_right">−0.206</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.837</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Tobacco/vaping sales</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">−0.099</td>
+<td headers="std.error" class="gt_row gt_right">0.163</td>
+<td headers="statistic" class="gt_row gt_right">−0.604</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.547</td>
+<td headers="r.squared" class="gt_row gt_right">0.091</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.032</td>
+<td headers="f.value" class="gt_row gt_right">1.537</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.941</td>
+<td headers="std.error" class="gt_row gt_right">0.195</td>
+<td headers="statistic" class="gt_row gt_right">25.296</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.485</td>
+<td headers="std.error" class="gt_row gt_right">0.213</td>
+<td headers="statistic" class="gt_row gt_right">−2.283</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.024</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.197</td>
+<td headers="std.error" class="gt_row gt_right">0.257</td>
+<td headers="statistic" class="gt_row gt_right">−0.767</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.444</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.254</td>
+<td headers="std.error" class="gt_row gt_right">0.300</td>
+<td headers="statistic" class="gt_row gt_right">−0.847</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.398</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.602</td>
+<td headers="std.error" class="gt_row gt_right">0.455</td>
+<td headers="statistic" class="gt_row gt_right">−1.321</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.189</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.656</td>
+<td headers="std.error" class="gt_row gt_right">0.688</td>
+<td headers="statistic" class="gt_row gt_right">−0.953</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.342</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.285</td>
+<td headers="std.error" class="gt_row gt_right">0.161</td>
+<td headers="statistic" class="gt_row gt_right">−1.768</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.079</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.072</td>
+<td headers="std.error" class="gt_row gt_right">0.686</td>
+<td headers="statistic" class="gt_row gt_right">−1.561</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.121</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.047</td>
+<td headers="std.error" class="gt_row gt_right">0.560</td>
+<td headers="statistic" class="gt_row gt_right">−0.084</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.933</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Dating apps</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">−0.128</td>
+<td headers="std.error" class="gt_row gt_right">0.200</td>
+<td headers="statistic" class="gt_row gt_right">−0.644</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.521</td>
+<td headers="r.squared" class="gt_row gt_right">0.077</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.017</td>
+<td headers="f.value" class="gt_row gt_right">1.285</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.648</td>
+<td headers="std.error" class="gt_row gt_right">0.303</td>
+<td headers="statistic" class="gt_row gt_right">12.024</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.460</td>
+<td headers="std.error" class="gt_row gt_right">0.330</td>
+<td headers="statistic" class="gt_row gt_right">−1.392</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.166</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.084</td>
+<td headers="std.error" class="gt_row gt_right">0.400</td>
+<td headers="statistic" class="gt_row gt_right">−0.211</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.833</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.571</td>
+<td headers="std.error" class="gt_row gt_right">0.466</td>
+<td headers="statistic" class="gt_row gt_right">−1.223</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.223</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.693</td>
+<td headers="std.error" class="gt_row gt_right">0.707</td>
+<td headers="statistic" class="gt_row gt_right">−0.979</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.329</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.132</td>
+<td headers="std.error" class="gt_row gt_right">1.069</td>
+<td headers="statistic" class="gt_row gt_right">−0.123</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.902</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.516</td>
+<td headers="std.error" class="gt_row gt_right">0.251</td>
+<td headers="statistic" class="gt_row gt_right">−2.058</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.041</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−0.633</td>
+<td headers="std.error" class="gt_row gt_right">1.066</td>
+<td headers="statistic" class="gt_row gt_right">−0.594</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.554</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.800</td>
+<td headers="std.error" class="gt_row gt_right">0.870</td>
+<td headers="statistic" class="gt_row gt_right">−0.919</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.359</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Anonymous social media</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.255</td>
+<td headers="std.error" class="gt_row gt_right">0.310</td>
+<td headers="statistic" class="gt_row gt_right">0.822</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.412</td>
+<td headers="r.squared" class="gt_row gt_right">0.058</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.003</td>
+<td headers="f.value" class="gt_row gt_right">0.947</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.770</td>
+<td headers="std.error" class="gt_row gt_right">0.257</td>
+<td headers="statistic" class="gt_row gt_right">14.659</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.111</td>
+<td headers="std.error" class="gt_row gt_right">0.280</td>
+<td headers="statistic" class="gt_row gt_right">−0.397</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.692</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.074</td>
+<td headers="std.error" class="gt_row gt_right">0.339</td>
+<td headers="statistic" class="gt_row gt_right">−0.219</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.827</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.441</td>
+<td headers="std.error" class="gt_row gt_right">0.395</td>
+<td headers="statistic" class="gt_row gt_right">−1.115</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.267</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.521</td>
+<td headers="std.error" class="gt_row gt_right">0.599</td>
+<td headers="statistic" class="gt_row gt_right">−0.870</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.386</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.354</td>
+<td headers="std.error" class="gt_row gt_right">0.906</td>
+<td headers="statistic" class="gt_row gt_right">−0.390</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.697</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.416</td>
+<td headers="std.error" class="gt_row gt_right">0.213</td>
+<td headers="statistic" class="gt_row gt_right">−1.958</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.052</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.994</td>
+<td headers="std.error" class="gt_row gt_right">0.904</td>
+<td headers="statistic" class="gt_row gt_right">−2.207</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.029</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.375</td>
+<td headers="std.error" class="gt_row gt_right">0.738</td>
+<td headers="statistic" class="gt_row gt_right">−0.508</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.612</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Non-anonymous social media</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.590</td>
+<td headers="std.error" class="gt_row gt_right">0.263</td>
+<td headers="statistic" class="gt_row gt_right">2.243</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.026</td>
+<td headers="r.squared" class="gt_row gt_right">0.111</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.054</td>
+<td headers="f.value" class="gt_row gt_right">1.935</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.526</td>
+<td headers="std.error" class="gt_row gt_right">0.250</td>
+<td headers="statistic" class="gt_row gt_right">14.081</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">0.109</td>
+<td headers="std.error" class="gt_row gt_right">0.272</td>
+<td headers="statistic" class="gt_row gt_right">0.401</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.689</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.035</td>
+<td headers="std.error" class="gt_row gt_right">0.330</td>
+<td headers="statistic" class="gt_row gt_right">−0.105</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.916</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.213</td>
+<td headers="std.error" class="gt_row gt_right">0.385</td>
+<td headers="statistic" class="gt_row gt_right">0.554</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.581</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.445</td>
+<td headers="std.error" class="gt_row gt_right">0.584</td>
+<td headers="statistic" class="gt_row gt_right">0.763</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.447</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.484</td>
+<td headers="std.error" class="gt_row gt_right">0.882</td>
+<td headers="statistic" class="gt_row gt_right">−0.549</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.584</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.041</td>
+<td headers="std.error" class="gt_row gt_right">0.207</td>
+<td headers="statistic" class="gt_row gt_right">−0.200</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.842</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.187</td>
+<td headers="std.error" class="gt_row gt_right">0.880</td>
+<td headers="statistic" class="gt_row gt_right">−1.349</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.179</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">0.449</td>
+<td headers="std.error" class="gt_row gt_right">0.718</td>
+<td headers="statistic" class="gt_row gt_right">0.626</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.532</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Gig economy platforms</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.229</td>
+<td headers="std.error" class="gt_row gt_right">0.256</td>
+<td headers="statistic" class="gt_row gt_right">0.896</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.372</td>
+<td headers="r.squared" class="gt_row gt_right">0.035</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.027</td>
+<td headers="f.value" class="gt_row gt_right">0.563</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.730</td>
+<td headers="std.error" class="gt_row gt_right">0.267</td>
+<td headers="statistic" class="gt_row gt_right">13.972</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">0.017</td>
+<td headers="std.error" class="gt_row gt_right">0.291</td>
+<td headers="statistic" class="gt_row gt_right">0.058</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.954</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.275</td>
+<td headers="std.error" class="gt_row gt_right">0.352</td>
+<td headers="statistic" class="gt_row gt_right">−0.782</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.436</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.498</td>
+<td headers="std.error" class="gt_row gt_right">0.410</td>
+<td headers="statistic" class="gt_row gt_right">1.213</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.227</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.506</td>
+<td headers="std.error" class="gt_row gt_right">0.622</td>
+<td headers="statistic" class="gt_row gt_right">0.814</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.417</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.436</td>
+<td headers="std.error" class="gt_row gt_right">0.941</td>
+<td headers="statistic" class="gt_row gt_right">0.464</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.644</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.167</td>
+<td headers="std.error" class="gt_row gt_right">0.221</td>
+<td headers="statistic" class="gt_row gt_right">−0.755</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.452</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.488</td>
+<td headers="std.error" class="gt_row gt_right">0.938</td>
+<td headers="statistic" class="gt_row gt_right">−1.586</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.115</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.644</td>
+<td headers="std.error" class="gt_row gt_right">0.766</td>
+<td headers="statistic" class="gt_row gt_right">−0.841</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.402</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Vacation rental sites</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.150</td>
+<td headers="std.error" class="gt_row gt_right">0.273</td>
+<td headers="statistic" class="gt_row gt_right">0.549</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.584</td>
+<td headers="r.squared" class="gt_row gt_right">0.062</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.002</td>
+<td headers="f.value" class="gt_row gt_right">1.027</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.407</td>
+<td headers="std.error" class="gt_row gt_right">0.264</td>
+<td headers="statistic" class="gt_row gt_right">12.911</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.230</td>
+<td headers="std.error" class="gt_row gt_right">0.287</td>
+<td headers="statistic" class="gt_row gt_right">−0.800</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.425</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">0.165</td>
+<td headers="std.error" class="gt_row gt_right">0.348</td>
+<td headers="statistic" class="gt_row gt_right">0.475</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.636</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.436</td>
+<td headers="std.error" class="gt_row gt_right">0.406</td>
+<td headers="statistic" class="gt_row gt_right">−1.075</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.284</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.623</td>
+<td headers="std.error" class="gt_row gt_right">0.615</td>
+<td headers="statistic" class="gt_row gt_right">1.013</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.313</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.384</td>
+<td headers="std.error" class="gt_row gt_right">0.930</td>
+<td headers="statistic" class="gt_row gt_right">0.413</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.680</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.291</td>
+<td headers="std.error" class="gt_row gt_right">0.218</td>
+<td headers="statistic" class="gt_row gt_right">−1.335</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.184</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−0.574</td>
+<td headers="std.error" class="gt_row gt_right">0.927</td>
+<td headers="statistic" class="gt_row gt_right">−0.619</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.537</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">0.614</td>
+<td headers="std.error" class="gt_row gt_right">0.757</td>
+<td headers="statistic" class="gt_row gt_right">0.811</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.418</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Subscription services</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.431</td>
+<td headers="std.error" class="gt_row gt_right">0.270</td>
+<td headers="statistic" class="gt_row gt_right">1.598</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.112</td>
+<td headers="r.squared" class="gt_row gt_right">0.078</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.018</td>
+<td headers="f.value" class="gt_row gt_right">1.305</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.491</td>
+<td headers="std.error" class="gt_row gt_right">0.184</td>
+<td headers="statistic" class="gt_row gt_right">24.367</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">0.038</td>
+<td headers="std.error" class="gt_row gt_right">0.201</td>
+<td headers="statistic" class="gt_row gt_right">0.191</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.848</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">0.270</td>
+<td headers="std.error" class="gt_row gt_right">0.243</td>
+<td headers="statistic" class="gt_row gt_right">1.111</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.268</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.631</td>
+<td headers="std.error" class="gt_row gt_right">0.283</td>
+<td headers="statistic" class="gt_row gt_right">2.229</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.027</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.492</td>
+<td headers="std.error" class="gt_row gt_right">0.430</td>
+<td headers="statistic" class="gt_row gt_right">1.145</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.254</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.359</td>
+<td headers="std.error" class="gt_row gt_right">0.649</td>
+<td headers="statistic" class="gt_row gt_right">0.552</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.582</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">0.151</td>
+<td headers="std.error" class="gt_row gt_right">0.152</td>
+<td headers="statistic" class="gt_row gt_right">0.989</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.324</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.326</td>
+<td headers="std.error" class="gt_row gt_right">0.648</td>
+<td headers="statistic" class="gt_row gt_right">−2.047</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.043</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.927</td>
+<td headers="std.error" class="gt_row gt_right">0.529</td>
+<td headers="statistic" class="gt_row gt_right">−1.753</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.082</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Firearms/ammunition sales</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">−0.214</td>
+<td headers="std.error" class="gt_row gt_right">0.188</td>
+<td headers="statistic" class="gt_row gt_right">−1.136</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.258</td>
+<td headers="r.squared" class="gt_row gt_right">0.105</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.047</td>
+<td headers="f.value" class="gt_row gt_right">1.806</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.851</td>
+<td headers="std.error" class="gt_row gt_right">0.232</td>
+<td headers="statistic" class="gt_row gt_right">16.600</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.206</td>
+<td headers="std.error" class="gt_row gt_right">0.253</td>
+<td headers="statistic" class="gt_row gt_right">−0.817</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.415</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">0.080</td>
+<td headers="std.error" class="gt_row gt_right">0.306</td>
+<td headers="statistic" class="gt_row gt_right">0.262</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.794</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">0.242</td>
+<td headers="std.error" class="gt_row gt_right">0.357</td>
+<td headers="statistic" class="gt_row gt_right">0.678</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.499</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">0.010</td>
+<td headers="std.error" class="gt_row gt_right">0.541</td>
+<td headers="statistic" class="gt_row gt_right">0.019</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.985</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.033</td>
+<td headers="std.error" class="gt_row gt_right">0.818</td>
+<td headers="statistic" class="gt_row gt_right">0.040</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.968</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">0.116</td>
+<td headers="std.error" class="gt_row gt_right">0.192</td>
+<td headers="statistic" class="gt_row gt_right">0.603</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.548</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−0.869</td>
+<td headers="std.error" class="gt_row gt_right">0.815</td>
+<td headers="statistic" class="gt_row gt_right">−1.066</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.288</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">0.524</td>
+<td headers="std.error" class="gt_row gt_right">0.666</td>
+<td headers="statistic" class="gt_row gt_right">0.787</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.432</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Online pharmacies</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.460</td>
+<td headers="std.error" class="gt_row gt_right">0.237</td>
+<td headers="statistic" class="gt_row gt_right">1.939</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.055</td>
+<td headers="r.squared" class="gt_row gt_right">0.080</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.021</td>
+<td headers="f.value" class="gt_row gt_right">1.348</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">3.856</td>
+<td headers="std.error" class="gt_row gt_right">0.271</td>
+<td headers="statistic" class="gt_row gt_right">14.239</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.497</td>
+<td headers="std.error" class="gt_row gt_right">0.295</td>
+<td headers="statistic" class="gt_row gt_right">−1.686</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.094</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.504</td>
+<td headers="std.error" class="gt_row gt_right">0.357</td>
+<td headers="statistic" class="gt_row gt_right">−1.413</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.160</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.254</td>
+<td headers="std.error" class="gt_row gt_right">0.416</td>
+<td headers="statistic" class="gt_row gt_right">−0.610</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.543</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.223</td>
+<td headers="std.error" class="gt_row gt_right">0.631</td>
+<td headers="statistic" class="gt_row gt_right">−0.353</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.725</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−0.559</td>
+<td headers="std.error" class="gt_row gt_right">0.954</td>
+<td headers="statistic" class="gt_row gt_right">−0.586</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.559</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.296</td>
+<td headers="std.error" class="gt_row gt_right">0.224</td>
+<td headers="statistic" class="gt_row gt_right">−1.323</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.188</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−0.480</td>
+<td headers="std.error" class="gt_row gt_right">0.951</td>
+<td headers="statistic" class="gt_row gt_right">−0.505</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.615</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.189</td>
+<td headers="std.error" class="gt_row gt_right">0.777</td>
+<td headers="statistic" class="gt_row gt_right">−0.243</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.808</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Virtual reality worlds</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.429</td>
+<td headers="std.error" class="gt_row gt_right">0.277</td>
+<td headers="statistic" class="gt_row gt_right">1.550</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.123</td>
+<td headers="r.squared" class="gt_row gt_right">0.054</td>
+<td headers="adj.r.squared" class="gt_row gt_right">−0.008</td>
+<td headers="f.value" class="gt_row gt_right">0.877</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">2.526</td>
+<td headers="std.error" class="gt_row gt_right">0.248</td>
+<td headers="statistic" class="gt_row gt_right">10.175</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">0.051</td>
+<td headers="std.error" class="gt_row gt_right">0.270</td>
+<td headers="statistic" class="gt_row gt_right">0.190</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.849</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.219</td>
+<td headers="std.error" class="gt_row gt_right">0.327</td>
+<td headers="statistic" class="gt_row gt_right">−0.670</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.504</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.011</td>
+<td headers="std.error" class="gt_row gt_right">0.382</td>
+<td headers="statistic" class="gt_row gt_right">−0.030</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.976</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.499</td>
+<td headers="std.error" class="gt_row gt_right">0.579</td>
+<td headers="statistic" class="gt_row gt_right">−0.863</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.390</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">0.261</td>
+<td headers="std.error" class="gt_row gt_right">0.875</td>
+<td headers="statistic" class="gt_row gt_right">0.299</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.766</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.287</td>
+<td headers="std.error" class="gt_row gt_right">0.205</td>
+<td headers="statistic" class="gt_row gt_right">−1.399</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.164</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.046</td>
+<td headers="std.error" class="gt_row gt_right">0.872</td>
+<td headers="statistic" class="gt_row gt_right">−1.199</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.232</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−1.137</td>
+<td headers="std.error" class="gt_row gt_right">0.712</td>
+<td headers="statistic" class="gt_row gt_right">−1.596</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.113</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">News</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.441</td>
+<td headers="std.error" class="gt_row gt_right">0.254</td>
+<td headers="statistic" class="gt_row gt_right">1.738</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.084</td>
+<td headers="r.squared" class="gt_row gt_right">0.076</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.016</td>
+<td headers="f.value" class="gt_row gt_right">1.268</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">(Intercept)</td>
+<td headers="estimate" class="gt_row gt_right">4.548</td>
+<td headers="std.error" class="gt_row gt_right">0.223</td>
+<td headers="statistic" class="gt_row gt_right">20.401</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.000</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">ages 25-34</td>
+<td headers="estimate" class="gt_row gt_right">−0.437</td>
+<td headers="std.error" class="gt_row gt_right">0.243</td>
+<td headers="statistic" class="gt_row gt_right">−1.801</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.074</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">ages 35-44</td>
+<td headers="estimate" class="gt_row gt_right">−0.562</td>
+<td headers="std.error" class="gt_row gt_right">0.294</td>
+<td headers="statistic" class="gt_row gt_right">−1.914</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.058</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">ages 45-54</td>
+<td headers="estimate" class="gt_row gt_right">−0.178</td>
+<td headers="std.error" class="gt_row gt_right">0.343</td>
+<td headers="statistic" class="gt_row gt_right">−0.519</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.605</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">ages 55-64</td>
+<td headers="estimate" class="gt_row gt_right">−0.565</td>
+<td headers="std.error" class="gt_row gt_right">0.520</td>
+<td headers="statistic" class="gt_row gt_right">−1.088</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.279</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">ages 65+</td>
+<td headers="estimate" class="gt_row gt_right">−1.412</td>
+<td headers="std.error" class="gt_row gt_right">0.786</td>
+<td headers="statistic" class="gt_row gt_right">−1.798</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.074</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">Man</td>
+<td headers="estimate" class="gt_row gt_right">−0.136</td>
+<td headers="std.error" class="gt_row gt_right">0.184</td>
+<td headers="statistic" class="gt_row gt_right">−0.736</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.463</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">Non-binary</td>
+<td headers="estimate" class="gt_row gt_right">−1.741</td>
+<td headers="std.error" class="gt_row gt_right">0.783</td>
+<td headers="statistic" class="gt_row gt_right">−2.222</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #FF0000; color: #FFFFFF;">0.028</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">Yes</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">Prefer not to disclose</td>
+<td headers="estimate" class="gt_row gt_right">−0.548</td>
+<td headers="std.error" class="gt_row gt_right">0.640</td>
+<td headers="statistic" class="gt_row gt_right">−0.857</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.393</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+    <tr><td headers="Support_Method" class="gt_row gt_left">Mature Literature</td>
+<td headers="term" class="gt_row gt_left">With Children &lt; 18</td>
+<td headers="estimate" class="gt_row gt_right">0.357</td>
+<td headers="std.error" class="gt_row gt_right">0.228</td>
+<td headers="statistic" class="gt_row gt_right">1.567</td>
+<td headers="p.value" class="gt_row gt_right" style="background-color: #D3D3D3; color: #000000;">0.119</td>
+<td headers="r.squared" class="gt_row gt_right">0.104</td>
+<td headers="adj.r.squared" class="gt_row gt_right">0.046</td>
+<td headers="f.value" class="gt_row gt_right">1.788</td>
+<td headers="Significant" class="gt_row gt_left">No</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</body>
+</html>
