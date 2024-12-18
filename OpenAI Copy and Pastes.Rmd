@@ -1,0 +1,517 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+
+
+
+
+
+
+########## Copy/Pastes
+
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_September 11, 2024_11.13.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_September 12, 2024_14.12.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_September 12, 2024_14.18.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+```
+
+
+```{r Combine-data prep countries (for cross-country comparisons)}
+#This combines all four countries into one
+
+
+#Removes the first row, which is a question.
+AUS.df_modified <- AUS.df[-1,]
+FRA.df_modified <- FRA.df[-1,]
+IND.df_modified <- IND.df[-1,]
+
+AUS.df_modified$Country <- "Australia"
+FRA.df_modified$Country <- "France"
+IND.df_modified$Country <- "India"
+
+# Combine all dataframes into one large dataframe
+combined_df <- rbind(AUS.df_modified, FRA.df_modified, IND.df_modified)
+
+# Check the structure of the combined dataset
+#str(combined_df)
+
+# View the first few rows of the combined dataset
+#head(combined_df)
+
+excel_data <- combined_df
+
+
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data %>% filter(as.numeric(`Q2`) == 1.0) 
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+```{r Specific % Value for Desired Methods 2}
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+
+# Select the specific columns
+country_column <- excel_data.mini[["Country"]]
+value_columns <- excel_data.mini[, 36:50]
+
+# Combine the columns into a new data frame
+selected_columns <- cbind(country_column, value_columns)
+
+# Set proper column names for the combined dataframe
+colnames(selected_columns)[1] <- "Country"
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate(across(everything(), as.character)) %>%
+  pivot_longer(cols = -Country, names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Compute total counts per country
+totals_per_country <- excel_data.mini %>%
+  group_by(Country) %>%
+  summarise(total = n())
+
+# Compute counts and proportions per country
+value_counts <- long_data %>%
+  group_by(Country, variable, value) %>%
+  tally() %>%
+  left_join(totals_per_country, by = 'Country') %>%
+  mutate(proportion = n / total * 100) %>%
+  # Map variable names to website names
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(Country, variable, value, proportion)
+
+# Map 'value's to method names
+value_counts <- value_counts %>%
+  mutate(method = case_when(
+    value == '1' ~ "GovID",
+    value == '2' ~ "Facial Estimation",
+    value == '3' ~ "Credit Card",
+    value == '4' ~ "Self-Declaration",
+    value == '5' ~ "Device-led Authentication",
+    is.na(value) ~ "No Opinion",
+    TRUE ~ value
+  ))
+
+# Calculate median proportions across countries
+median_proportions <- value_counts %>%
+  group_by(variable, method) %>%
+  summarise(median_proportion = median(proportion, na.rm = TRUE)) %>%
+  ungroup()
+
+# Reshape data to wide format
+median_table <- median_proportions %>%
+  pivot_wider(names_from = method, values_from = median_proportion)
+
+# Replace NAs with 0
+median_table[is.na(median_table)] <- 0
+
+# Round percentages and bold the highest values
+method_columns <- c("GovID", "Facial Estimation", "Credit Card", "Self-Declaration", "Device-led Authentication")
+
+median_table <- median_table %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%
+  rowwise() %>%
+  mutate(across(all_of(method_columns), ~ ifelse(. == max(c_across(all_of(method_columns)), na.rm = TRUE) & . != 0,
+                                                paste0('<b>', ., '</b>'),
+                                                as.character(.)))) %>%
+  ungroup()
+
+# Rename 'variable' to 'Website Type'
+median_table <- median_table %>%
+  rename('Website Type' = variable)
+
+# Display the table
+print(
+  xtable(median_table, 
+         caption = "<b>Median among Australia, India, and France</b>:<b> Age Assurance Desired Methods Table</b><br>(% Comfortable With Each Method Type)"), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "median_value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+```
+
+
+```{r Same as chunk above but uses mean rather than median}
+
+
+# Select the specific columns
+country_column <- excel_data.mini[["Country"]]
+value_columns <- excel_data.mini[, 36:50]
+
+# Combine the columns into a new data frame
+selected_columns <- cbind(country_column, value_columns)
+
+# Set proper column names for the combined dataframe
+colnames(selected_columns)[1] <- "Country"
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate(across(everything(), as.character)) %>%
+  pivot_longer(cols = -Country, names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Compute total counts per country
+totals_per_country <- excel_data.mini %>%
+  group_by(Country) %>%
+  summarise(total = n())
+
+# Compute counts and proportions per country
+value_counts <- long_data %>%
+  group_by(Country, variable, value) %>%
+  tally() %>%
+  left_join(totals_per_country, by = 'Country') %>%
+  mutate(proportion = n / total * 100) %>%
+  # Map variable names to website names
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(Country, variable, value, proportion)
+
+# Map 'value's to method names
+value_counts <- value_counts %>%
+  mutate(method = case_when(
+    value == '1' ~ "GovID",
+    value == '2' ~ "Facial Estimation",
+    value == '3' ~ "Credit Card",
+    value == '4' ~ "Self-Declaration",
+    value == '5' ~ "Device-led Authentication",
+    is.na(value) ~ "No Opinion",
+    TRUE ~ value
+  ))
+
+# Calculate mean proportions across countries
+mean_proportions <- value_counts %>%
+  group_by(variable, method) %>%
+  summarise(mean_proportion = mean(proportion, na.rm = TRUE)) %>%
+  ungroup()
+
+# Reshape data to wide format
+mean_table <- mean_proportions %>%
+  pivot_wider(names_from = method, values_from = mean_proportion)
+
+# Replace NAs with 0
+mean_table[is.na(mean_table)] <- 0
+
+# Round percentages and bold the highest values
+method_columns <- c("GovID", "Facial Estimation", "Credit Card", "Self-Declaration", "Device-led Authentication")
+
+mean_table <- mean_table %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%
+  rowwise() %>%
+  mutate(across(all_of(method_columns), ~ ifelse(. == max(c_across(all_of(method_columns)), na.rm = TRUE) & . != 0,
+                                                paste0('<b>', ., '</b>'),
+                                                as.character(.)))) %>%
+  ungroup()
+
+# Rename 'variable' to 'Website Type'
+mean_table <- mean_table %>%
+  rename('Website Type' = variable)
+
+# Display the table
+print(
+  xtable(mean_table, 
+         caption = "<b>Mean among Australia, India, and France</b>:<b> Age Assurance Desired Methods Table</b><br>(% Comfortable With Each Method Type)"), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "mean_value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+
+```
+
+
+The following needs to be changed/adapted for to include all three countries
+Column "Country" signifies the country (Australia, India, or France)
+```{r Specific values (median) for all three countries}
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+
+# Note: I made a massive mistake. Instead of nrow(excel_data.mini), I placed n.
+# Prepare and rename columns
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = sum(nrow(excel_data.mini), na.rm = TRUE), proportion = n / total * 100) %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%  # Round to 2 decimal points
+  mutate(across(where(is.numeric), ~ as.numeric(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+# Bold the highest values in each row
+value_counts <- value_counts %>%
+  rowwise() %>%
+  mutate(across(GovID:`Device-led Authentication`, ~ ifelse(. == max(c_across(GovID:`Device-led Authentication`), na.rm = TRUE) &
+                                                          . != 0, 
+                                                          paste0('<b>', ., '</b>'), 
+                                                          as.character(.))))
+
+# Convert back to data frame
+value_counts <- as.data.frame(value_counts)
+
+# Replace NAs with 0
+value_counts[is.na(value_counts)] <- 0
+
+# Print the table with xtable
+print(
+  xtable(value_counts, 
+         caption = paste0("<b>", country_name, "</b>", ":<b> Age Assurance Desired Methods Table</b><br>", "(% Comfortable With Each Method Type)")), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+```
+
+
+
+```{r Specific values (median) for all three countries}
+
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+
+# Ensure columns 'Country' and the required range of columns are selected correctly
+selected_columns <- excel_data.mini[, c('Country', 36:50)]
+
+# Convert the dataframe to long format and include 'Country'
+long_data <- selected_columns %>%
+  mutate(across(everything(), as.character)) %>%
+  pivot_longer(cols = -Country, names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Compute total counts per country
+totals_per_country <- excel_data.mini %>%
+  group_by(Country) %>%
+  summarise(total = n())
+
+# Compute counts and proportions per country
+value_counts <- long_data %>%
+  group_by(Country, variable, value) %>%
+  tally() %>%
+  left_join(totals_per_country, by = 'Country') %>%
+  mutate(proportion = n / total * 100) %>%
+  # Map variable names to website names
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(Country, variable, value, proportion)
+
+# Map 'value's to method names
+value_counts <- value_counts %>%
+  mutate(method = case_when(
+    value == '1' ~ "GovID",
+    value == '2' ~ "Facial Estimation",
+    value == '3' ~ "Credit Card",
+    value == '4' ~ "Self-Declaration",
+    value == '5' ~ "Device-led Authentication",
+    is.na(value) ~ "No Opinion",
+    TRUE ~ value
+  ))
+
+# Calculate median proportions across countries
+median_proportions <- value_counts %>%
+  group_by(variable, method) %>%
+  summarise(median_proportion = median(proportion, na.rm = TRUE)) %>%
+  ungroup()
+
+# Reshape data to wide format
+median_table <- median_proportions %>%
+  pivot_wider(names_from = method, values_from = median_proportion)
+
+# Replace NAs with 0
+median_table[is.na(median_table)] <- 0
+
+# Round percentages and bold the highest values
+method_columns <- c("GovID", "Facial Estimation", "Credit Card", "Self-Declaration", "Device-led Authentication")
+
+median_table <- median_table %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%
+  rowwise() %>%
+  mutate(across(all_of(method_columns), ~ ifelse(. == max(c_across(all_of(method_columns)), na.rm = TRUE) & . != 0,
+                                                paste0('<b>', ., '</b>'),
+                                                as.character(.)))) %>%
+  ungroup()
+
+# Rename 'variable' to 'Website Type'
+median_table <- median_table %>%
+  rename('Website Type' = variable)
+
+# Display the table
+print(
+  xtable(median_table, 
+         caption = "<b>Median among Australia, India, and France</b>:<b> Age Assurance Desired Methods Table</b><br>(% Comfortable With Each Method Type)"), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "median_value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+
+```
+
+
+
+

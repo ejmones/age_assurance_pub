@@ -1,0 +1,1396 @@
+---
+title: "Regression on Demographics (R markdown)"
+output: html_document
+date: "2024-08-05"
+---
+
+
+
+
+
+```{r Libraries}
+# Basic Data Manipulation and Visualization
+library(tidyverse)  # Includes ggplot2, dplyr, tidyr, readr, purrr, tibble
+
+# Working with Excel Files
+library(readxl)  # To read Excel files
+
+# Statistical Analysis/Modeling
+library(ISLR2)  # Datasets and functions for An Introduction to Statistical Learning
+library(AER)  # Applied Econometrics with R
+
+# Creating Tables and Outputs
+library(gt)  # Grammar of tables
+library(xtable)  # Export tables to LaTeX or HTML
+
+# Visual Annotations and Multcomp
+library(multcompView)  # Functions for multiple comparison methods
+library(ggsignif)  # Statistical significance of ggplot plots
+
+# HTML/Website Screenshots
+library(webshot2)  # A utility to take screenshots of web pages
+
+# Augment the output of models
+library(broom)
+
+
+
+```
+
+
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_August 21, 2024_07.12.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 22, 2024_07.02.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_August 22, 2024_09.32.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+```
+
+
+Important Chunk:
+```{r change countries (e.g., use this to change the country we're observing)}
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- IND.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+
+```
+
+```{r data prep}
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+
+```{r extra filters for demographics (can skip)}
+gender_col_index <- 68
+
+#To find column number of a specific demograhics category | e.g. "gender", "race", "parent", etc.
+which(names(excel_data.mini) == "gender")
+
+
+# Filter rows based on gender
+age_assur_women <- excel_data.mini %>% filter(as.numeric(excel_data.mini[[gender_col_index]]) == 1.0)
+age_assur_men <- excel_data.mini %>% filter(as.numeric(excel_data.mini[[gender_col_index]]) == 2.0)
+
+# Verify the resulting dataframes
+head(age_assur_women)
+head(age_assur_men)
+
+
+#age_assur.withquestion <- excel_data[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; Includes 1st row and selects columns 19 to 33, five star rating.
+
+# Selects the column of interest (e.g. gender)
+col_of_interest <- which(names(excel_data.mini) == "gender")
+# Count the occurrences of each col_of_interest category
+category_count <- excel_data.mini %>%
+  group_by(as.numeric(.[[col_of_interest]])) %>%
+  summarise(count = n()) %>%
+  rename(gender = `as.numeric(.[[col_of_interest]])`)
+category_count
+
+
+
+
+
+# Define index for demographic columns
+demographics_cols <- 67:80
+
+# Find and store column indices of specific demographics categories for reuse
+gender_col_index <- which(names(excel_data.mini) == "gender")
+age_col_index <- which(names(excel_data.mini) == "age")
+parent_col_index <- which(names(excel_data.mini) == "parent")
+
+# Filter data based on gender
+age_assur_women <- excel_data.mini %>%
+  filter(as.numeric(.[[gender_col_index]]) == 1.0)
+
+age_assur_men <- excel_data.mini %>%
+  filter(as.numeric(.[[gender_col_index]]) == 2.0)
+
+# Verify the resulting data frames
+head(age_assur_women)
+head(age_assur_men)
+
+# Example: If you want to filter based on another demographic category like 'parent'
+parent_filtered <- excel_data.mini %>%
+  filter(as.numeric(.[[parent_col_index]]) == 1.0) # Assuming '1' indicates a parent
+
+# Verify the resulting data frame
+head(parent_filtered)
+
+
+
+
+```
+
+```{r Combine countries(can skip)}
+#This combines all four countries into one
+
+
+#Removes the first row, which is a question.    
+AUS.df_modified <- AUS.df[-1,]
+IND.df_modified <- IND.df[-1,]
+SGP.df_modified <- SGP.df[-1,]
+USA.df_modified <- USA.df[-1,]
+
+
+# Add a new column 'Country' to each dataframe
+AUS.df_modified$Country <- "Australia"
+IND.df_modified$Country <- "India"
+SGP.df_modified$Country <- "Singapore"
+USA.df_modified$Country <- "USA"
+
+# Combine all dataframes into one large dataframe
+combined_df <- rbind(AUS.df_modified, IND.df_modified, SGP.df_modified, USA.df_modified)
+
+# Check the structure of the combined dataset
+str(combined_df)
+
+# View the first few rows of the combined dataset
+head(combined_df)
+
+excel_data <- combined_df
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data %>% filter(as.numeric(`Q2`) == 1.0) 
+age_assur.mini <- excel_data[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; Skips the 1st row (which is a question for the survey participant) and selects columns 19 to 33, five star rating.
+age_assur.withquestion <- excel_data[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; Includes 1st row and selects columns 19 to 33, five star rating.
+
+```
+
+## Plots
+
+
+```{r generate pdf (or html) file of regressions on demographics}
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Ensure predictor variables (age, gender, parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(gender,age, parent) 
+# pred_vars <- excel_data.mini_reg %>% select(age) #remove any of the three variables to decrease multicollinearity.
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+#  formula <- as.formula(paste(valid_name, "~ age"))
+ formula <- as.formula(paste(valid_name, "~ gender + age + parent"))  
+  
+  model <- lm(formula, data = excel_data.mini_reg)
+  
+  coeftest_summary <- coeftest(model) # Use coeftest for robust standard errors
+  
+  # Convert coeftest summary to tidy format
+  tidy_model <- tidy(coeftest_summary) %>%
+    mutate(Support_Method = original_name)  # Add the original name
+  
+  model_summaries[[original_name]] <- tidy_model
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, everything())
+
+
+
+
+significance_level <- 0.10 # Change to 0.10, 0.05, or 0.01 if needed.
+# Add a column to indicate significance (p-value < 0.05)
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+     term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    
+    term == 'parent2.0' ~ "Children < 18",
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Regression Analysis Summary",
+    subtitle = paste(country_name, ": Significance of support towards age verification methods;", current_date_formatted)
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an HTML file
+gtsave(gt_table, paste(country_name," regression_significance_summaries ", current_date, ".html" ))
+```
+
+```{r count intercept (optional)}
+# Count the number of participants who fulfill the intercept
+count_criteria <- excel_data.mini %>%
+  filter(gender == 1.0, age == 2.0, parent == 2.0) %>%
+  summarize(count = n())
+count_criteria
+```
+
+```{}
+
+```
+
+
+```{r data prep for discouragement probability | demographics}
+
+# Create a copy for this and following R chunks
+excel_data.dcrm <- excel_data.mini #dcrm as in discouragement
+# Ensure that 'religion' column is numeric
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(religion = as.numeric(religion))
+
+# Assign anyone who answered 1.0-8.0 as religious (0). Answered 9.0 or 10.0 in religion as irreligious (1).
+# Adjust irreligious status based on free response answers in religion_11_TEXT
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(`religion` = as.numeric(`religion`)) %>%
+  mutate(religious = case_when(
+    religion >= 1.0 & religion <= 8.0 ~ 1, # Anyone who selected a religion (1-8) is religious
+    religion %in% c(9.0, 10.0) ~ 0, # Atheist and agnostic (9,10) considered as irreligious
+    religion_11_TEXT %in% c("Christian", "believer","Jainism", "Sikh","Humanity") ~ 1, # Free response answers indicative of religious status
+    religion_11_TEXT %in% c("N religion", "Non religious", "Not religious") ~ 0, # Free response answers indicative of irreligious status
+    TRUE ~ NA_real_  # Default case, if none of the above conditions are met
+  ))
+
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(`sexual orientation` = as.numeric(`sexual orientation`)) %>%
+  mutate(straight = case_when(
+    `sexual orientation` == 4 ~ 1,
+    `sexual orientation` != 4 ~ 0,
+    TRUE ~ NA_real_  # Default case, if none of the above conditions are met
+  ))
+
+
+```
+
+```{r Discouragement Probability with regards to demographics}
+
+
+
+# Create the `not_discouraged` column
+excel_data.dcrm$not_discouraged <- ifelse(grepl("\\b1\\b", excel_data.dcrm[[53]]), 1, 0)
+
+
+
+lm(not_discouraged ~ age + gender + religious, data = excel_data.dcrm) %>%
+  summary()
+
+glm_model <- glm(not_discouraged ~ age + gender + religious, 
+                 family = binomial(link = "logit"), # You can switch from probit to logit if needed
+                 data = excel_data.dcrm)
+glm_results <- tidy(glm_model)
+
+# Mark significance
+glm_results <- glm_results %>%
+  mutate(significant = ifelse(p.value < 0.10, "Significant (p < 0.10)", "Not Significant"))
+
+
+glm_results <- glm_results %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+
+
+# Create gt table
+glm_table <- glm_results %>%
+  gt() %>%
+  tab_header(
+    title = "Logistic Regression Results",
+    subtitle = "Significance marked at p < 0.10"
+  ) %>%
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    significant = "Significance"
+  )
+
+# Export gt table to HTML
+gtsave(glm_table, "logistic_regression_results.html")
+```
+
+
+```{r discouragement probability (lm version)}
+
+
+
+# Create the `not_discouraged` column
+excel_data.dcrm$not_discouraged <- ifelse(grepl("\\b1\\b", excel_data.dcrm[[53]]), 1, 0)
+
+
+
+lm_model <- lm(not_discouraged ~ age + gender + religious, data = excel_data.dcrm)
+lm_results <- tidy(lm_model)
+
+
+# Mark significance
+lm_results <- lm_results %>%
+  mutate(significant = ifelse(p.value < 0.10, "Significant (p < 0.10)", "Not Significant"))
+
+
+lm_results <- lm_results %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+
+
+
+# Create gt table
+lm_table <- lm_results %>%
+  gt() %>%
+  tab_header(
+    title = "Linear Regression Results",
+    subtitle = "Significance marked at p < 0.10"
+  ) %>%
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    significant = "Significance"
+  )
+
+# Export gt table to HTML
+gtsave(glm_table, "linear_regression_results.html")
+```
+
+```{r opt}
+# Fit a logistic regression model
+logistic_model <- glm(not_discouraged ~ age + gender + religion, 
+                      family = binomial(link = "logit"),  # Change "logit" to "probit" if you prefer
+                      data = excel_data.dcrm)
+
+# Perform backward stepwise selection (for model simplification)
+stepwise_model <- step(logistic_model, direction = "backward", trace = 0)
+
+# Summary of the final model
+model_summary <- summary(stepwise_model)
+
+# Display the summary in the console
+print(model_summary)
+```
+
+
+```{r bar plot}
+#Bar plot
+# Select columns 36 to 50
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+long_data <- long_data %>%
+  mutate(variable = case_when( # Could remove if too big. This is meant to capitalize,
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearm/Ammo Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy",
+    variable == "mature" ~ "Mature Lit",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anon Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+    ))
+
+
+# Count the occurrences of each value (including NAs) for each column
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = sum(n, na.rm = TRUE), proportion = n / total) %>%
+  select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0)  # Replace NAs with 0 for missing proportions
+
+# Add NA column for easy graphing 
+value_counts <- value_counts %>% mutate(across(where(is.numeric), ~ ifelse(. == 0, NA, .)))
+
+# Transpose data for plotting
+plot_data <- as.data.frame(t(value_counts[,-1]))  # Exclude the 'variable' column
+colnames(plot_data) <- value_counts$variable
+rownames(plot_data) <- c("1", "2", "3", "4", "5", "NA")
+
+
+
+
+# View the proportions
+print(value_counts)
+
+  # Adjust margins to accommodate x-axis labels and legend
+par(mar = c(12, 4, 4, 2) + 0.1)  # Increase bottom margin to make space for legend
+
+# Convert proportions to percentages
+plot_data_percent <- plot_data * 100
+
+# Create the bar plot with percentage y-axis
+bar_positions <- barplot(
+  as.matrix(plot_data_percent),
+  beside = TRUE,
+  col = c(rainbow(5), "grey"),  # Add grey color for NA
+  main = paste(country_name, ": Desired Age Assurance Measures "),
+#  main = paste(country_name, ": Desired Age Assurance Measures; ", current_date_formatted), # Has date formmated on it
+    ylab = "Proportion (%)",
+  las = 2,  # Rotate x-axis labels
+  cex.names = 0.8,  # Smaller font size for labels
+  args.legend = list(x = "topright")
+)
+
+Method_list <- c("Government", "Facial Estimation", "Credit Card", "Self-Declaration", "Device Authentication", "Lack of Opinion")
+
+legend(
+  x = mean(bar_positions) -25,  # Center the legend beneath the plot
+  y = -82.5,  # Adjust the "y" position to lie beneath the x-axis labels
+  legend = Method_list,  # Categories for the legend
+  fill = c(rainbow(5), "grey"), 
+  cex = 0.8,  # Smaller text size
+  pt.cex = 0.8,  # Smaller points
+  horiz = FALSE,  # Make the legend vertical
+  xpd = TRUE  # Allow drawing outside plot region
+)
+
+
+# Add horizontal lines at every 10% increment
+abline(h = seq(0, 100, by = 10), col = "black", lty = "dotted")
+```
+```{r bar plot (for colorblind) | not working}
+# Bar plot
+# Select columns 36 to 50
+
+library(ggplot2)
+library(ggpattern)
+
+# Suppose your existing `plot_data_percent` dataframe looks like this (after transformations)
+plot_data_percent <- data.frame(
+  Government = c(10, 20, 15, 5, 25, 25),
+  `Facial Estimation` = c(15, 25, 10, 20, 20, 10),
+  `Credit Card` = c(20, 10, 25, 15, 15, 15),
+  `Self-Declaration` = c(25, 15, 20, 10, 10, 20),
+  `Device Authentication` = c(10, 15, 20, 25, 10, 20),
+  `Lack of Opinion` = c(20, 20, 10, 25, 10, 15)
+)
+rownames(plot_data_percent) <- c("1", "2", "3", "4", "5", "NA")
+plot_data_percent <- as.data.frame(t(plot_data_percent))
+plot_data_percent$Method <- rownames(plot_data_percent)
+
+# Convert to long format for ggplot2
+plot_data_long <- reshape2::melt(plot_data_percent, id.vars = "Method")
+
+# Assign patterns and a colorblind-friendly palette
+patterns <- c("stripe", "crosshatch", "cross", "circle", "blank", "stripe_horizontal")
+cb_palette <- c("#D55E00", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "gray70")
+
+# Create the plot
+ggplot(plot_data_long, aes(x = Method, y = value, fill = variable, pattern = variable)) +
+  geom_bar_pattern(
+    stat = "identity", 
+    position = "dodge", 
+    pattern_fill = cb_palette,
+    pattern_density = 0.5,
+    pattern_spacing = 0.05,
+    pattern_key_scale_factor = 0.6
+  ) +
+  scale_pattern_manual(values = patterns) +
+  scale_fill_manual(values = cb_palette) +
+  labs(
+    title = paste(country_name, ": Desired Age Assurance Measures;"),
+    y = "Proportion (%)",
+    fill = "Responses"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 10)
+  ) +
+  scale_y_continuous(breaks = seq(0, 100, by = 10)) +
+  guides(pattern = guide_legend(override.aes = list(fill = cb_palette)))
+```
+
+
+
+```{r plots}
+
+#Platforms data frame
+platforms <- age_assur.mini[c(colnames(age_assur.mini))]
+
+sapply(platforms[, 1:15], function(x) sum(is.na(x)))
+platforms <- mutate_at(platforms, vars(1:15), as.numeric)
+
+
+
+
+# Stats
+summary_stats <- summary(platforms, na.rm = TRUE)
+summary_stats
+
+gathered_data <- gather(platforms, key = "Website.Type", value = "Value")
+#View(gathered_data)
+
+# Calculate the overall mean
+overall_mean <- mean(gathered_data$Value, na.rm = TRUE)
+overall_mean
+
+# FINAL: Plotting with 95% confidence intervals
+
+ggplot(gathered_data, aes(x = reorder(Website.Type, Value, FUN = function(x) mean(x, na.rm = TRUE)), y = Value)) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.2) +  # Add 95% CI
+  stat_summary(fun = "mean", geom = "point", shape = 18, size = 3, color = "black") +  # Add mean points
+  geom_hline(yintercept = overall_mean, linetype = "dashed", color = "blue") +  # Add overall mean line
+  labs(title = paste0(country_name, ": Support for Age Assurance by Website Type"), 
+  #labs(title = paste0(country_name, ": Support for Age Assurance by Website Type; ", current_date_formatted), 
+  
+            x = "Website Type", y = "1= str. oppose, 5= str.support") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, face = "bold"),  # Rotate x-axis labels and make them bold
+        axis.title.x = element_text(face = "bold"),  # Make x-axis title bold
+        axis.title.y = element_text(face = "bold"),  # Make y-axis title bold
+        plot.title = element_text(face = "bold")) +  # Make plot title bold
+  scale_y_continuous(breaks = seq(1, 5, 1), limits = c(1, 5))  # Adjust limits accordingly
+
+```
+
+```{r violin plot}
+# Platforms data frame
+platforms <- age_assur.mini[c(colnames(age_assur.mini))]
+
+# Convert first 15 columns to numeric after checking for missing values
+sapply(platforms[, 1:15], function(x) sum(is.na(x)))
+platforms <- mutate_at(platforms, vars(1:15), as.numeric)
+
+# Summary statistics (if needed)
+summary_stats <- summary(platforms, na.rm = TRUE)
+print(summary_stats)
+
+# Gather data into long format for plotting
+gathered_data <- gather(platforms, key = "Website.Type", value = "Value")
+
+# Calculate the overall mean
+overall_mean <- mean(gathered_data$Value, na.rm = TRUE)
+print(overall_mean)
+
+# Plotting with violin plot and 95% confidence intervals
+ggplot(gathered_data, aes(x = reorder(Website.Type, Value, FUN = function(x) mean(x, na.rm = TRUE)), y = Value)) +
+  geom_violin(fill = "lightblue", color = "black") +  # Violin plot for distribution
+  #geom_boxplot(width = 0.1, outlier.color = "red", outlier.shape = 16, outlier.size = 2, notch = TRUE) +  # Boxplot for summary stats
+  geom_hline(yintercept = overall_mean, linetype = "dashed", color = "blue") +  # Overall mean line
+  labs(title = paste0(country_name, ": Support for Age Assurance by Website Type"), 
+  #labs(title = paste0(country_name, ": Support for Age Assurance by Website Type; ", current_date_formatted), 
+  
+            x = "Website Type", y = "1= str. oppose, 5= str.support") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, face = "bold"),  # Rotate x-axis labels and make them bold
+        axis.title.x = element_text(face = "bold"),  # Make x-axis title bold
+        axis.title.y = element_text(face = "bold"),  # Make y-axis title bold
+        plot.title = element_text(face = "bold")) +  # Make plot title bold
+  scale_y_continuous(breaks = seq(1, 5, 1), limits = c(1, 5))  # Adjust y-axis limits accordingly
+
+```
+
+```{r bar plot (wrong. use this for reference purposes only)}
+#Bar plot
+# Select columns 36 to 50
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Count the occurrences of each value (including NAs) for each column
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = sum(n, na.rm = TRUE), proportion = n / total) %>%
+  select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0)  # Replace NAs with 0 for missing proportions
+
+# Add NA column for easy graphing 
+value_counts <- value_counts %>% mutate(across(where(is.numeric), ~ ifelse(. == 0, NA, .)))
+
+# Transpose data for plotting
+plot_data <- as.data.frame(t(value_counts[,-1]))  # Exclude the 'variable' column
+colnames(plot_data) <- value_counts$variable
+rownames(plot_data) <- c("1", "2", "3", "4", "5", "NA")
+
+# View the proportions
+print(value_counts)
+
+  # Adjust margins to accommodate x-axis labels and legend
+par(mar = c(12, 4, 4, 2) + 0.1)  # Increase bottom margin to make space for legend
+
+# Convert proportions to percentages
+plot_data_percent <- plot_data * 100
+
+# Create the bar plot with percentage y-axis
+bar_positions <- barplot(
+  as.matrix(plot_data_percent),
+  beside = TRUE,
+  col = c(rainbow(5), "grey"),  # Add grey color for NA
+  main = paste(country_name, ": Desired Age Assurance Measures; ", current_date_formatted),
+  ylab = "Proportion (%)",
+  las = 2,  # Rotate x-axis labels
+  cex.names = 0.8,  # Smaller font size for labels
+  args.legend = list(x = "topright")
+)
+
+Method_list <- c("Credit Card", "Device Authentication", "Facial Estimation", "Government", "Self-declaration", "No Opinion")
+
+legend(
+  x = mean(bar_positions) -30,  # Center the legend beneath the plot
+  y = -40,  # Adjust the "y" position to lie beneath the x-axis labels
+  legend = Method_list,  # Categories for the legend
+  fill = c(rainbow(5), "grey"), 
+  cex = 0.8,  # Smaller text size
+  pt.cex = 0.8,  # Smaller points
+  horiz = FALSE,  # Make the legend vertical
+  xpd = TRUE  # Allow drawing outside plot region
+)
+```
+```{r optional labels}
+
+age_labels <- c("18-24", "25-34", "35-44", "45-54", "55-64", "65+")
+gender_labels <- c("Woman", "Man", "Non-binary", "Prefer not to disclose", "Prefer to self-describe")
+race_labels <- c("White","Hispanic,Latino, or Spanish origin", "Black or African AMerican", "Asian", "American Indian or Alaska Native", " Native Hawaiian or Other Pacific Islander", "Middle Eastern", "Other")
+parent_labels <- c("Is a parent", "Isn't a parent")
+
+
+
+
+
+# Calculate proportions for each category
+compute_proportions <- function(data, column) {
+  data %>%
+    group_by(!!sym(column)) %>%
+    summarize(count = n()) %>%
+    mutate(proportion = count / sum(count) * 100) %>%
+    ungroup() %>%
+    select(!!sym(column), proportion)
+}
+```
+
+Note: May need to revise race section if switching countries
+```{r Specific % Values for Demographics}
+# Table plot
+
+#Copies excel data for use in this chunk
+excel_data.demographics <- excel_data.mini
+
+# Accounts for free-response answers for race
+excel_data.demographics <- excel_data.demographics %>%
+  mutate(race = ifelse(
+    !is.na(race_8_TEXT),
+    case_when(
+      race_8_TEXT %in% c("mixed asian and black", "White and hispanic", "Black and White") ~ 8.0,
+      race_8_TEXT %in% c("north african", "North African", "White and North African") ~ 1.0,
+      TRUE ~ NA_real_
+    ),
+    race # Keep original value if race_8_TEXT is NA
+  ))
+excel_data.demographics$race <- formatC(as.numeric(excel_data.demographics$race), format = "f", digits = 1)
+
+
+# Select columns of interest
+selected_columns <- data.frame(
+  age = excel_data.demographics[, 69],         # Column of age categories. Observations are in 2.0-7.0
+  gender = excel_data.demographics[, 70],      # Gender column. Observations in 1.0-5.0
+  race = excel_data.demographics[, 75],        # Race column. Observations in 1.0-8.0
+  parent = excel_data.demographics[, 79]       # Parental status column. Observations in 2.0-3.0
+)
+
+# Ensure that gender and race self-descriptions are kept as separate categories if needed
+# If these columns should be used instead, include them in the dataframe
+
+# Calculate proportions for each category
+compute_proportions <- function(data, column) {
+  data %>%
+    group_by(!!sym(column)) %>%
+    summarize(count = n()) %>%
+    mutate(proportion = count / sum(count) * 100) %>%
+    ungroup() %>%
+    select(!!sym(column), proportion)
+}
+
+# Compute proportions for each demographic variable
+age_proportions <- compute_proportions(selected_columns, "age")
+age_proportions$age <- c("18-24", "25-34", "35-44", "45-54", "55-64", "65+")
+
+gender_proportions <- compute_proportions(selected_columns, "gender")
+gender_proportions$gender <- c("Woman", "Man", "Non-binary", "Prefer not to disclose")
+
+race_proportions <- compute_proportions(selected_columns, "race")
+# Create a new row to be added
+new_row <- data.frame(
+  race = '6.0',
+  proportion = 0
+)
+# Bind the new row to the existing `race_proportions` data frame
+race_proportions <- rbind(race_proportions, new_row)
+# Optionally, you may want to sort the data frame by the `race` column
+race_proportions <- race_proportions %>%
+  arrange(race)
+
+race_proportions$race <- c("White", "Hispanic, Latino, or Spanish origin", "Black or African American", "Asian", "American Indian or Alaska Native", "Native Hawaiian or Other Pacific Islander", "Middle Eastern", "Multiracial")
+
+
+parent_proportions <- compute_proportions(selected_columns, "parent")
+parent_proportions$parent <- parent_labels <- c("With a child <18yo", "No child <18yo")
+
+
+
+# Create an empty data frame with the maximum number of rows among all categories
+max_len <- max(nrow(age_proportions), nrow(gender_proportions), nrow(race_proportions), nrow(parent_proportions))
+combined_df <- data.frame(
+  age = character(max_len),
+  age_proportion = numeric(max_len),
+  gender = character(max_len),
+  gender_proportion = numeric(max_len),
+  race = character(max_len),
+  race_proportion = numeric(max_len),
+  parent = character(max_len),
+  parent_proportion = numeric(max_len),
+  stringsAsFactors = FALSE
+)
+
+# Fill in the columns with the available data
+combined_df[1:nrow(age_proportions), "age"] <- age_proportions$age
+combined_df[1:nrow(age_proportions), "age_proportion"] <- age_proportions$proportion
+
+combined_df[1:nrow(gender_proportions), "gender"] <- gender_proportions$gender
+combined_df[1:nrow(gender_proportions), "gender_proportion"] <- gender_proportions$proportion
+
+combined_df[1:nrow(race_proportions), "race"] <- race_proportions$race
+combined_df[1:nrow(race_proportions), "race_proportion"] <- race_proportions$proportion
+
+combined_df[1:nrow(parent_proportions), "parent"] <- parent_proportions$parent
+combined_df[1:nrow(parent_proportions), "parent_proportion"] <- parent_proportions$proportion
+
+# Create the GT table
+gt_table <- gt(combined_df) %>%
+  tab_header(
+    title = "Participant Demographics",
+  ) %>%
+   fmt_number(
+    decimals = 1) %>%
+  cols_label(
+    age = "Age",
+    age_proportion = "Proportion (%)",
+    gender = "Gender",
+    gender_proportion = "Proportion (%)",
+    race = "Race",
+    race_proportion = "Proportion (%)",
+    parent = "Parental Status",
+    parent_proportion = "Proportion (%)"
+  )
+
+# View the GT table
+print(gt_table)
+
+# Optionally save the table as an HTML file
+gtsave(gt_table, "value_counts_table.html")
+```
+
+
+```{r Specific % Values for Desired Methods}
+# Table plot
+# Select columns 36 to 50
+library(xtable)
+
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Count the occurrences of each value (including NAs) for each column
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = sum(n, na.rm = TRUE), proportion = n / total * 100) %>%
+  mutate(variable = case_when( # Could remove if too big. This is meant to capitalize,
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0)  # Replace NAs with 0 for missing proportions
+
+# Add NA column for easy graphing 
+value_counts <- value_counts %>% mutate(across(where(is.numeric), ~ ifelse(. == 0, NA, .)))
+
+
+#Renames columns
+value_counts <- value_counts %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+value_counts[is.na(value_counts)] <- 0
+
+view(value_counts)
+
+
+
+
+print(xtable(value_counts, caption = "<b>Age Assurance Desired Methods Table</b><br>"), caption.placement = "top", type="html", file="value_counts_table.html")
+```
+
+```{r (optional)}
+# Check if value_counts table is not empty
+if (nrow(value_counts) == 0) {
+  stop("value_counts dataframe is empty, check your data!")
+}
+
+# Create the gt table with website types as row labels
+gt_table <- gt(value_counts) %>% 
+  tab_header(
+    title = "Proportion of Support For Age Verification Method for Each Website Type",
+    subtitle = "Proportions of GovID, Facial Estimation, Credit Card, Self-Declaration, Device-led Authentication per Variable"
+  ) %>% 
+  fmt_number(
+    columns = c("1", "2", "3", "4", "5", "<NA>"),
+    decimals = 1
+  ) %>% 
+  cols_label(
+    `1` = "GovID",
+    `2` = "Facial Estimation",
+    `3` = "Credit Card",
+    `4` = "Self-Declaration",
+    `5` = "Device-led Authentication",
+    `<NA>` = "No Opinion"
+  )
+
+
+# Save the GT table as an HTML file
+gtsave(gt_table, filename = "value_counts_table.html")
+```
+
+
+
+```{r specific % values for Website Types}
+
+# Converting selected columns to numeric
+age_assur.mini <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- gather(age_assur.mini, key = "Website.Type", value = "Value")
+
+# Calculating overall mean
+overall_mean <- mean(gathered_data$Value, na.rm = TRUE)
+
+# Calculating the mean and standard deviation for each website type
+summary_stats <- gathered_data %>%
+  group_by(Website.Type) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    StdDev = sd(Value, na.rm = TRUE)
+  )
+
+
+# Calculate the percent who support age verification on specific platforms by those who answer 4 or 5 on the five start scale.
+support_stats <- gathered_data %>%
+  group_by(Website.Type) %>%
+  summarize(
+    SupportPercent = mean(Value >= 4, na.rm = TRUE) * 100
+  )
+
+# Merging summary_stats with support_stats
+summary_stats <- summary_stats %>%
+  left_join(support_stats, by = "Website.Type")
+
+summary_stats <- summary_stats %>%
+  arrange(desc(SupportPercent))
+
+
+# Changing the column name from 'B' to 'Y'
+colnames(summary_stats)[colnames(summary_stats) == "Website.Type"] <- "Website Type"
+
+
+# Generate a GT summary table with Mean, StdDev, and Support Percent
+gt_table <- summary_stats %>%
+  gt() %>%
+  tab_header(
+    title = "Values For Website Types",
+    subtitle = paste(country_name)
+  ) %>%
+  fmt_number(
+    columns = c(Mean, StdDev, SupportPercent),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Mean = "Mean",
+    StdDev = "Std. Error",
+    SupportPercent = "Percent Support (4 or 5)"
+  )
+
+# Save the GT table as an HTML file
+gtsave(gt_table, filename = paste(country_name, "_percent_support_age_assurance_methods_", current_date, ".html"))
+
+
+```
+
+
+
+
+# 
+```{r numbers}
+
+# Function to get summary statistics for each dataset
+get_summary_stats <- function(df) {
+  df.mini <- df[-1,] %>%
+    filter(as.numeric(`Q2`) == 1.0) %>%
+    filter(as.numeric(`attn`) == 3.0)
+
+  age_assur.mini <- df.mini[, 19:33] %>%
+    rename(News = identity.att_15, `Mature Literature` = identity.att_16) %>%
+    mutate_at(vars(1:15), as.numeric)
+
+  gathered_data <- gather(age_assur.mini, key = "Website.Type", value = "Value")
+
+  summary_stats <- gathered_data %>%
+    group_by(Website.Type) %>%
+    summarise(
+      Mean = mean(Value, na.rm = TRUE),
+      StdDev = sd(Value, na.rm = TRUE),
+      Percent = Mean / 5 * 100
+    )
+
+  return(summary_stats)
+}
+
+# Get summary statistics for all datasets
+summary_stats_list <- lapply(datasets, get_summary_stats)
+
+# Combine summary statistics into one data frame
+summary_stats_combined <- bind_rows(summary_stats_list, .id = "Country")
+
+# Creating a gt table
+summary_table <- summary_stats_combined %>%
+  gt() %>%
+  tab_header(
+    title = md("**Support for Age Assurance by Website Type**"),
+    subtitle = md(paste("Data as of", Sys.Date()))
+  ) %>%
+  fmt_number(
+    columns = vars(Mean, StdDev, Percent),
+    decimals = 2
+  ) %>%
+  cols_label(
+    Country = "Country",
+    Website.Type = "Website Type",
+    Mean = "Mean",
+    StdDev = "Standard Deviation",
+    Percent = "Support (%)"
+  ) %>%
+  tab_spanner(
+    label = "Statistics",
+    columns = vars(Mean, StdDev, Percent)
+  ) %>%
+  tab_source_note(
+    source_note = "Generated by R"
+  ) %>%
+  opt_table_outline()
+
+# Save the table as an image
+gtsave(summary_table, "summary_stats_by_country.html")
+
+summary_table
+```
+
+Work in progress graph:
+```{r stacked graph}
+
+
+methods_data_frame_new2 <- data.frame(
+  Website_Type = c("Vaping", "Firearms", "Adult content", "Dating", "Pharmacies", "Gambling", "Gig economy", "Vacation rental", "Gaming", "Non-anonymous social media", "Anonymous social media", "Virtual reality", "Subscription services", "News"),
+  GovID = c(87, 96, 60, 71, 90, 86, 80, 80, 60, 40, 40, 88, 44, 40),
+  Selfdec = c(22, 23, 36, 38, 25, 20, 34, 28, 39, 59, 50, 26, 49, 50),
+  CreditCard = c(36, 39, 33, 31, 38, 51, 32, 61, 37, 19, 14, 31, 64, 60),
+  DeviceAuthentication = c(30, 29, 34, 38, 29, 29, 32, 32, 37, 48, 48, 30, 40, 30),
+  FacialEstimation = c(19, 26, 21, 35, 15, 20, 17, 14, 15, 26, 29, 12, 18, 16)
+)
+
+
+# Add a new blank row
+new_row <- data.frame(
+  Name = character(),
+  GovID = numeric(),
+  Selfdec = numeric(),
+  CreditCard = numeric(),
+  DeviceAuthentication = numeric(),
+  FacialEstimation = numeric()
+)
+
+
+methods_data_frame_new2 <- rbind(methods_data_frame_new2, new_row)
+
+# Print the modified data frame
+View(methods_data_frame_new2)
+
+
+##Best Plot Now!!!
+ggplot(methods_data_frame_new2, aes(x = Website_Type)) +
+  geom_bar(aes(y = GovID, fill = "GovID"), position = "stack", stat = "identity") +
+  geom_bar(aes(y = Selfdec, fill = "Selfdec"), position = "stack", stat = "identity") +
+  geom_bar(aes(y = CreditCard, fill = "CreditCard"), position = "stack", stat = "identity") +
+  geom_bar(aes(y = DeviceAuthentication, fill = "DeviceAuthentication"), position = "stack", stat = "identity") +
+  geom_bar(aes(y = FacialEstimation, fill = "FacialEstimation"), position = "stack", stat = "identity") +
+  labs(title = "Desired Age Assurance Measures", x = "Website Type", y = "Percentage comfortable") +
+ # scale_fill_manual(values = c("Gov.ID" = "blue", "Selfdec" = "green", "Credit" = "orange", "DeviceAuthentication" = "purple", "FacialEstimation" = "red")) +
+  theme_minimal() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+```{r data prep 2 (don't use unless using choice text as opposed to numeric text)}
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.character(`Q2`) == 'I consent to participate in this survey.') #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.character(`attn`) == 'Broccoli') #Filters for attention
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    News = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    News = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+```
+
+
+
+
+```{r generate pdf (or html) file of regressions on demographics}
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Ensure predictor variables (age, gender, parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(gender,age, parent) 
+# pred_vars <- excel_data.mini_reg %>% select(age) #remove any of the three variables to decrease multicollinearity.
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+#  formula <- as.formula(paste(valid_name, "~ age"))
+ formula <- as.formula(paste(valid_name, "~ gender + age + parent"))  
+  
+  model <- lm(formula, data = excel_data.mini_reg)
+  
+  coeftest_summary <- coeftest(model) # Use coeftest for robust standard errors
+  
+  # Convert coeftest summary to tidy format
+  tidy_model <- tidy(coeftest_summary) %>%
+    mutate(Support_Method = original_name)  # Add the original name
+  
+  model_summaries[[original_name]] <- tidy_model
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, everything())
+
+
+
+
+significance_level <- 0.10 # Change to 0.10, 0.05, or 0.01 if needed.
+# Add a column to indicate significance (p-value < 0.05)
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Regression Analysis Summary",
+    subtitle = paste(country_name, ": Significance of support towards age verification methods;", current_date_formatted)
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an HTML file
+gtsave(gt_table, paste(country_name," regression_significance_summaries ", current_date, ".html" ))
+```
+
+Work in progress graph
+```{r graph}
+
+
+```

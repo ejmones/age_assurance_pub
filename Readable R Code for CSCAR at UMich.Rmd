@@ -1,0 +1,371 @@
+---
+title: "R Code For CSCAR at UMich"
+author: "J.M."
+date: "2024-10-07"
+output: html_document
+---
+
+
+
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_September 11, 2024_11.13.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_September 12, 2024_14.12.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_September 12, 2024_14.18.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+```
+
+
+Use this chunk to analyze one country
+```{r change countries/do data prep (e.g., use this to change the country we're observing)}
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- IND.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+#____________________________________________________________________________________
+
+  #Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+  excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+  excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+  excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+  
+  age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+  
+  
+  
+  #Renames two columns
+  age_assur.mini <- age_assur.mini %>%
+    rename(
+      `News` = identity.att_15,
+      `Mature Literature` = identity.att_16
+    )
+  
+  
+  #Renames two columns
+  excel_data.mini <- excel_data.mini %>%
+    rename(
+      `News` = identity.att_15,
+      `Mature Literature` = identity.att_16
+    )
+
+  
+
+  
+```
+
+
+
+
+```{r Combine-data prep countries (for cross-country comparisons)}
+#This combines all four countries into one
+
+
+#Removes the first row, which is a question.
+AUS.df_modified <- AUS.df[-1,]
+FRA.df_modified <- FRA.df[-1,]
+IND.df_modified <- IND.df[-1,]
+
+AUS.df_modified$Country <- "Australia"
+FRA.df_modified$Country <- "France"
+IND.df_modified$Country <- "India"
+
+# Combine all dataframes into one large dataframe
+combined_df <- rbind(AUS.df_modified, FRA.df_modified, IND.df_modified)
+
+# Check the structure of the combined dataset
+#str(combined_df)
+
+# View the first few rows of the combined dataset
+#head(combined_df)
+
+excel_data <- combined_df
+
+
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data %>% filter(as.numeric(`Q2`) == 1.0) 
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+
+# Automatically update the country name
+country_name <- "All Three Countries"
+
+```
+
+
+
+
+```{r generate pdf (or html) file of regressions on demographics}
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+# First, ensure the 'parent' variable is a factor
+excel_data.mini_reg$parent <- as.factor(excel_data.mini_reg$parent)
+
+# Change the reference level of 'parent' to '3.0'
+excel_data.mini_reg$parent <- relevel(excel_data.mini_reg$parent, ref = "3.0")
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Ensure predictor variables (age, gender, parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(parent) 
+# pred_vars <- excel_data.mini_reg %>% select(age) #remove any of the three variables to decrease multicollinearity.
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+#  formula <- as.formula(paste(valid_name, "~ age"))
+ formula <- as.formula(paste(valid_name, "~ parent"))  
+  
+  model <- lm(formula, data = excel_data.mini_reg)
+  
+  coeftest_summary <- coeftest(model) # Use coeftest for robust standard errors
+  
+  # Convert coeftest summary to tidy format
+  tidy_model <- tidy(coeftest_summary) %>%
+    mutate(Support_Method = original_name)  # Add the original name
+  
+  model_summaries[[original_name]] <- tidy_model
+  
+  
+  
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, everything())
+
+
+
+
+significance_level <- 0.10 # Change to 0.10, 0.05, or 0.01 if needed.
+# Add a column to indicate significance (p-value < 0.05)
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+     term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    
+    term == 'parent2.0' ~ "With Children < 18",
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Regression Analysis Summary",
+#    subtitle = paste(country_name, ": Significance of support towards age verification methods;", current_date_formatted)
+    subtitle = paste(country_name, ": Significance of support towards age verification methods")
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Support_Method = "Method",
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an HTML file
+gtsave(gt_table,file.path("Pictures/",paste0(country_name," regression_significance_summaries ", current_date, ".html" )))
+```
+
+
+
+```{r OLR}
+
+
+
+
+age_assur.numeric <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+excel_data.olr <- excel_data.mini
+
+
+excel_data.olr[,19:33] <- age_assur.numeric
+
+# Exclude non-binary and "prefer not to disclose"
+excel_data.olr <- subset(excel_data.olr, gender %in% c("1.0", "2.0"))
+
+
+
+# Model fitting and exporting to HTML and PNG 
+results_list <- list()
+model_list <- list()
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.olr[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.olr)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+
+# Editing the columns
+excel_data.olr <- excel_data.olr %>%
+  mutate(
+    gender = case_when(
+      gender == "1.0" ~ "Woman",
+      gender == "2.0" ~ "Man",
+      gender == "gender3.0" ~ "Non-binary",
+      gender == "gender4.0" ~ "Prefer not to disclose",
+      TRUE ~ gender  # This keeps the original value if no condition is met
+    ),
+    age = case_when(
+      age == "3.0" ~ "ages 25-34",
+      age == "4.0" ~ "ages 35-44",
+      age == "5.0" ~ "ages 45-54",
+      age == "6.0" ~ "ages 55-64",
+      age == "7.0" ~ "ages 65+",
+      TRUE ~ age  # This keeps the original value if no condition is met
+    ),
+    parent = case_when(
+      parent == "2.0" ~ "With Children < 18",
+      parent == "3.0" ~ "No children < 18",
+      TRUE ~ parent  # This keeps the original value if no condition is met
+    )
+  )
+
+
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  
+  formula <- paste0(paste("as.factor(",valid_name,")"), " ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Print model summary
+  summary(model)
+  
+
+}
+```

@@ -1,0 +1,186 @@
+---
+title: "FDR Correction (R Markdown)"
+author: "J.M."
+date: "2024-08-07"
+output: html_document
+---
+
+
+```{r Libraries}
+library(readxl)
+library(ISLR2) 
+
+library(dplyr)
+library(tidyr)
+library(multcompView)
+library(ggsignif)
+library(stringr)
+library(ggplot2)
+
+```
+
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance_August 7, 2024_15.47.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance_August 6, 2024_15.53.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+#############
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+
+```
+
+```{r change countries (e.g., use this to change from USA to AUS)}
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- AUS.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to MM-DD-YY format
+current_date_formatted <- format(current_date, "%m-%d-%y")
+current_time_formatted <- format(current_time, "%m-%d-%y %H:%M:%S")
+
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+
+
+
+```
+
+```{r data prep}
+library(readxl)
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    News = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+```{r extra filters for demographics (can skip)}
+gender_col_index <- 68
+# Filter rows based on gender
+age_assur_women <- excel_data.mini %>% filter(as.numeric(excel_data.mini[[gender_col_index]]) == 1.0)
+age_assur_men <- excel_data.mini %>% filter(as.numeric(excel_data.mini[[gender_col_index]]) == 2.0)
+
+# Verify the resulting dataframes
+head(age_assur_women)
+head(age_assur_men)
+
+
+#age_assur.withquestion <- excel_data[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; Includes 1st row and selects columns 19 to 33, five star rating.
+
+```
+
+
+```{r FDR correction}
+#Family Wise Error Rate (FWER)
+#If the null hypothesis is true for each of m independent hypothesis tests, then the FWER = 1 - (1 - α) ^ m
+
+age_assur.mini
+summary(age_assur.mini)
+str(age_assur.mini)
+
+#Converts non-numeric data into numeric
+age_assur.mini <- data.frame(lapply(age_assur.mini, as.numeric))
+str(age_assur.mini)  # Check again to confirm all columns are numeric
+
+
+
+
+#p.value tests
+age_assur.pvalues <- rep(0,15)
+for(i in 1:15)
+  age_assur.pvalues[i] <- t.test(age_assur.mini[,i], mu = 0)$p.value
+
+q.values.BH <- p.adjust(age_assur.pvalues, method = "BH")
+q.values.BH[1:15]
+country_name
+
+#Revisit later
+sum(q.values.BH <= 0.1) #Returns 15
+sum(age_assur.pvalues <= (0.1 / 15)) #Returns 15
+
+q.values.BH <- p.adjust(age_assur.pvalues, method = "BH")
+q.values.BH[1:10]
+
+#Revisit later
+sum(q.values.BH <= 0.1) #This returns 0. There's evidence to reject the null hypothesis (that the mean is zero) at the 10% FDR level for 12 amount of the website categories. This suggests that the attitudes measure in 12 of these categories significantly differ from zero, controlling for the FDR. Either 1 or 2 (10% of 12) of these websites are likely to be false discoveries.
+#
+sum(age_assur.pvalues <= (0.1 / 15)) #By contrast, using the Bonferroni method, we'd only reject 11 null hypotheses.
+
+
+
+#Implementing Benjamini-Hochberg procedure
+ps <- sort(age_assur.pvalues)
+m <- length(age_assur.pvalues)
+q <- 0.1
+
+
+# Identify which p-values are significant
+wh.ps <- which(ps < q * (1:m) / m)
+if (length(wh.ps) > 0) {
+  wh <- 1:max(wh.ps)
+} else {
+  wh <- numeric(0)
+}
+
+# Plot p-values with log-log axes
+plot(ps, log = "xy", ylim = c(4e-6, 1), ylab = "P-value",
+     xlab = "Index", main = paste0(country_name, ": Benjamini-Hochberg Procedure (FDR Correction)"))
+# Highlight significant p-values
+points(wh, ps[wh], col = 4)
+
+# Add lines to the plot
+abline(a = 0, b = (q / m), col = 2, untf = TRUE)
+abline(h = 0.1 / 15, col = 3)
+
+
+
+```
+

@@ -1,0 +1,540 @@
+
+
+```{r Libraries}
+# Working with Excel Files
+library(readxl)  # To read Excel files
+
+# Statistical Analysis/Modeling
+library(ISLR2)  # Datasets and functions for An Introduction to Statistical Learning
+library(AER)  # Applied Econometrics with R
+library(stats)
+library(nortest) # To test for normality in functions
+
+# Creating Tables and Outputs
+library(gt)  # Grammar of tables
+library(xtable)  # Export tables to LaTeX or HTML
+
+# Visual Annotations and Multcomp
+library(multcompView)  # Functions for multiple comparison methods
+library(ggsignif)  # Statistical significance of ggplot plots
+
+# HTML/Website Screenshots
+library(webshot2)  # A utility to take screenshots of web pages
+
+#library(Hmisc)
+library(MASS) # For the polr() function needed for ordinal logistic regression
+# MUST use MASS::polr() to avoid conflicts with ordinal log regressions!
+
+# Augment the output of models
+library(broom)
+
+# Basic Data Manipulation and Visualization
+library(tidyverse)  # Includes ggplot2, dplyr, tidyr, readr, purrr, tibble
+
+```
+
+
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_September 11, 2024_11.13.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_September 12, 2024_14.12.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_September 12, 2024_14.18.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+```
+
+```{r Combine-data prep countries (for cross-country comparisons)}
+#This combines all four countries into one
+
+
+#Removes the first row, which is a question.
+AUS.df_modified <- AUS.df[-1,]
+FRA.df_modified <- FRA.df[-1,]
+IND.df_modified <- IND.df[-1,]
+
+AUS.df_modified$Country <- "Australia"
+FRA.df_modified$Country <- "France"
+IND.df_modified$Country <- "India"
+
+# Combine all dataframes into one large dataframe
+combined_df <- rbind(AUS.df_modified, FRA.df_modified, IND.df_modified)
+
+# Check the structure of the combined dataset
+#str(combined_df)
+
+# View the first few rows of the combined dataset
+#head(combined_df)
+
+excel_data <- combined_df
+
+
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data %>% filter(as.numeric(`Q2`) == 1.0) 
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+It looks like your ordinal logistic regression chunk might not be working as expected because of two main issues:
+
+1. **Formula Object**: When using `polr()`, the formula should be passed as a formula object, not just a character string. This means you need to convert your formula string into a formula object using `as.formula()`.
+
+2. **Factor Variables**: The `polr()` function expects categorical variables (both the dependent and independent variables) to be factors. Currently, your `age`, `gender`, and `parent` variables might not be factors, and the dependent variables may not be properly converted to factors.
+
+Here’s how you can modify your code to address these issues:
+
+```{r OLR 2.0 09-17-2024}
+
+
+age_assur.numeric <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+excel_data.olr <- excel_data.mini
+
+
+excel_data.olr[,19:33] <- age_assur.numeric
+
+# Exclude non-binary and "prefer not to disclose"
+excel_data.olr <- subset(excel_data.olr, gender %in% c("1.0", "2.0"))
+
+
+# Editing the columns
+excel_data.olr <- excel_data.olr %>%
+  mutate(
+    gender = case_when(
+      gender == "1.0" ~ "Woman",
+      gender == "2.0" ~ "Man",
+      gender == "gender3.0" ~ "Non-binary",
+      gender == "gender4.0" ~ "Prefer not to disclose",
+      TRUE ~ gender  # This keeps the original value if no condition is met
+    ),
+    age = case_when(
+      age == "3.0" ~ "ages 25-34",
+      age == "4.0" ~ "ages 35-44",
+      age == "5.0" ~ "ages 45-54",
+      age == "6.0" ~ "ages 55-64",
+      age == "7.0" ~ "ages 65+",
+      TRUE ~ age  # This keeps the original value if no condition is met
+    ),
+    parent = case_when(
+      parent == "2.0" ~ "With Children < 18",
+      parent == "3.0" ~ "No children < 18",
+      TRUE ~ parent  # This keeps the original value if no condition is met
+    )
+  )
+
+
+
+
+library(stargazer)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(broom)
+library(htmlTable)
+
+# Model fitting and exporting to HTML and PNG 
+results_list <- list()
+model_list <- list()
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.olr[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.olr)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+
+for (i in 19:33) {
+  valid_name <- name_map$valid_name[i - 18]
+  
+  formula <- paste0("as.factor(", valid_name, ") ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Tidy the results
+  tidy_model <- tidy(model)
+  tidy_model$model <- valid_name
+  
+  # Append to results list
+  results_list[[i - 18]] <- tidy_model
+  model_list[[valid_name]] <- model
+
+  # Plot the model and save as PNG
+  plot <- plot_model(model, title = valid_name)
+  ggsave(filename = paste0("model_plot_", valid_name, ".png"), plot = plot, width = 8, height = 6)
+}
+
+# Combine all results into a single data frame
+all_results <- do.call(rbind, results_list)
+
+# Create the HTML table
+html_output <- htmlTable(all_results)
+
+# Save the HTML table to a file
+cat(html_output, file = "tidy_model_summaries.html")
+
+# Export models to HTML file using stargazer
+stargazer(model_list, type = "html", out = "model_summaries.html")
+
+
+
+#____________________________________________________________________
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  
+  formula <- paste0(paste("as.factor(",valid_name,")"), " ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Print model summary
+  summary(model)
+  
+
+}
+
+
+```
+
+```{r}
+
+
+# Ensure that age, gender, and parent are factors
+excel_data.olr$age <- as.factor(excel_data.olr$age)
+excel_data.olr$gender <- as.factor(excel_data.olr$gender)
+excel_data.olr$parent <- as.factor(excel_data.olr$parent)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each dependent variable
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]
+  valid_name <- name_map$valid_name[i - 18]
+  
+  # Construct the formula and convert to formula object
+  formula_str <- paste0("as.factor(", valid_name, ") ~ age + gender + parent")
+  formula <- as.formula(formula_str)
+  
+  # Fit the model
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Print model summary
+  print(summary(model))
+  
+  # Store the model summary in the list
+  model_summaries[[valid_name]] <- summary(model)
+}
+```
+Certainly! Interpreting the output from an ordinal logistic regression (`polr()` function from the `MASS` package) can be a bit complex, but I'll guide you through each part of the output and explain what it means. This should help you understand the relationship between your predictors and the ordinal outcome variables.
+
+### **Overview of the Output**
+
+The output for each model includes:
+
+1. **Call**: The function call that generated the model.
+2. **Coefficients**: Estimates of the regression coefficients for the predictors, along with their standard errors and t-values.
+3. **Intercepts**: These are the estimated cutpoints (thresholds) separating the categories of the ordinal outcome variable.
+4. **Residual Deviance**: A measure of the model's fit.
+5. **AIC (Akaike Information Criterion)**: Another measure of model fit that penalizes complexity.
+
+Let's break down each section.
+
+---
+
+### **1. Coefficients**
+
+The coefficients represent the effect of each predictor variable on the likelihood of being in a higher category of the outcome variable.
+
+- **Values (Estimates)**: The estimated coefficients for each predictor.
+- **Std. Error**: The standard errors of the estimates.
+- **t value**: The t-statistic calculated as the estimate divided by its standard error (Estimate / Std. Error).
+
+**Interpretation of Coefficients:**
+
+- A **positive coefficient** indicates that as the predictor variable increases (or changes from the reference category), the odds of being in a **higher** category of the outcome variable increase.
+- A **negative coefficient** indicates that as the predictor variable increases (or changes from the reference category), the odds of being in a **lower** category of the outcome variable increase.
+
+**Example:**
+
+Let's take one of your outputs as an example.
+
+Suppose we have:
+
+```
+Coefficients:
+                      Value    Std. Error    t value  
+ageages 25-34        0.26323    0.2123      1.2397
+ageages 35-44        0.54091    0.2682      2.0171
+ageages 45-54        0.91843    0.3280      2.8002
+ageages 55-64        1.38880    0.7487      1.8550
+ageages 65+          0.80741    1.0450      0.7727
+genderWoman          0.23182    0.1708      1.3569
+parentWith Children < 18  0.05458    0.2155      0.2532
+```
+
+- **ageages 25-34**: The coefficient is **0.26323**, suggesting that individuals aged 25-34 have higher odds of being in a higher category of the outcome variable compared to the reference age group (which is likely the youngest age group, e.g., 18-24).
+
+- **genderWoman**: The coefficient is **0.23182**, indicating that women have higher odds of being in a higher category of the outcome variable compared to men (assuming "Man" is the reference category).
+
+**t value and Statistical Significance:**
+
+- The **t value** is used to assess the statistical significance of each coefficient.
+- A larger absolute t value suggests a more significant predictor.
+- However, `polr()` does not directly provide p-values, but you can approximate them or use additional functions to calculate them.
+
+---
+
+### **2. Intercepts**
+
+The intercepts (thresholds) represent the cutpoints between the categories of your ordinal outcome variable. They are not directly interpretable in the same way as coefficients but are essential for the model's calculations.
+
+**Example:**
+
+```
+Intercepts:
+                  Value    Std. Error   t value
+1|2               -2.0928   0.2270     -9.2177
+2|3               -1.0428   0.1891     -5.5140
+3|4                0.0526   0.1799      0.2922
+4|5                1.1574   0.1878      6.1645
+```
+
+- Each intercept represents the estimated logit (log-odds) between categories. For example, `1|2` is the threshold between categories 1 and 2.
+
+---
+
+### **3. Residual Deviance and AIC**
+
+- **Residual Deviance**: A measure of model fit. Lower values indicate a better fit to the data.
+- **AIC (Akaike Information Criterion)**: Another measure of model fit that penalizes model complexity (number of parameters). Lower AIC values suggest a better model.
+
+---
+
+### **4. Steps for Interpretation**
+
+1. **Identify Significant Predictors:**
+
+   - Look at the **t values** for each coefficient.
+   - Typically, a t value greater than ±1.96 corresponds to a p-value less than 0.05 (assuming large sample sizes).
+   - For more accurate p-values, you can calculate them using the coefficients and standard errors.
+
+2. **Interpret the Direction of Effects:**
+
+   - **Positive coefficients**: The predictor is associated with higher outcome categories.
+   - **Negative coefficients**: The predictor is associated with lower outcome categories.
+
+3. **Consider the Magnitude of Effects:**
+
+   - Larger absolute values of coefficients indicate a stronger effect.
+   - However, due to the nature of the log-odds scale, it's often helpful to exponentiate the coefficients to interpret them as odds ratios.
+
+---
+
+### **Calculating p-values and Odds Ratios**
+
+Since `polr()` does not provide p-values directly, you can calculate them manually or use functions to help with this.
+
+**Calculating p-values:**
+
+```r
+# For a single coefficient
+coef <- model$coefficients["ageages 25-34"]
+std_err <- sqrt(diag(vcov(model)))["ageages 25-34"]
+t_value <- coef / std_err
+p_value <- 2 * (1 - pnorm(abs(t_value)))
+```
+
+**Calculating Odds Ratios:**
+
+Exponentiating the coefficients gives the odds ratios.
+
+```r
+exp_coef <- exp(model$coefficients)
+```
+
+**Interpreting Odds Ratios:**
+
+- An odds ratio **greater than 1** indicates increased odds of being in a higher category of the outcome variable with an increase in the predictor.
+- An odds ratio **less than 1** indicates decreased odds.
+
+---
+
+### **Applying This to Your Models**
+
+Repeat the interpretation process for each of your models:
+
+1. **Determine which predictors are significant.**
+
+   - For example, in one of your models, `ageages 45-54` has a t value of **2.8002**, suggesting it is a significant predictor.
+
+2. **Interpret the effect size and direction.**
+
+   - A coefficient of **0.91843** for `ageages 45-54` indicates that individuals aged 45-54 have higher odds of being in a higher category of the outcome compared to the reference age group.
+
+3. **Consider the context of your variables.**
+
+   - Think about what the outcome variable represents (e.g., attitude towards age assurance technology), and interpret the predictors accordingly.
+
+4. **Check Model Fit.**
+
+   - Look at the AIC and residual deviance to compare models if needed.
+
+---
+
+### **Example Interpretation**
+
+Let's work through one of your outputs step by step.
+
+**Model Output:**
+
+```
+Coefficients:
+                      Value     Std. Error   t value
+ageages 45-54        0.91843    0.3280      2.8002
+genderWoman          0.23182    0.1708      1.3569
+parentWith Children < 18  0.05458    0.2155  0.2532
+```
+
+**Interpretation:**
+
+- **Age Group 45-54**:
+
+  - **Coefficient**: 0.91843
+  - **t value**: 2.8002 (significant at p < 0.005)
+  - **Interpretation**: Individuals aged 45-54 are significantly more likely to be in a higher category of the outcome variable compared to the reference group (likely 18-24 years old).
+
+- **Gender (Woman)**:
+
+  - **Coefficient**: 0.23182
+  - **t value**: 1.3569 (not statistically significant at conventional levels)
+  - **Interpretation**: Women may have higher odds of being in a higher category, but this effect is not statistically significant in this model.
+
+- **Parent Status (With Children < 18)**:
+
+  - **Coefficient**: 0.05458
+  - **t value**: 0.2532 (not statistically significant)
+  - **Interpretation**: Being a parent of children under 18 does not significantly affect the outcome in this model.
+
+---
+
+### **Important Considerations**
+
+- **Reference Categories**:
+
+  - The interpretation of categorical predictors depends on their reference categories.
+  - By default, R uses the first level of a factor as the reference category.
+  - Ensure you know which levels are the references (you can set them using `relevel()`).
+
+- **Proportional Odds Assumption**:
+
+  - Ordinal logistic regression assumes that the relationship between each pair of outcome groups is the same (proportional odds).
+  - It's important to check if this assumption holds for your data.
+
+- **Sample Size and Data Quality**:
+
+  - Small sample sizes or sparse data can affect the reliability of the estimates.
+  - Make sure your data meets the assumptions required for ordinal logistic regression.
+
+---
+
+### **Calculating p-values for Your Models**
+
+Here's how you can calculate p-values for all your coefficients:
+
+```r
+# For each model
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]
+  valid_name <- name_map$valid_name[i - 18]
+  
+  formula_str <- paste0("as.factor(", valid_name, ") ~ age + gender + parent")
+  formula <- as.formula(formula_str)
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Extract coefficients and standard errors
+  coef_table <- summary(model)$coefficients
+  
+  # Calculate p-values
+  p_values <- 2 * (1 - pnorm(abs(coef_table[,"t value"])))
+  
+  # Add p-values to the table
+  coef_table <- cbind(coef_table, "p value" = p_values)
+  
+  # Print the results
+  print(paste("Results for", valid_name))
+  print(coef_table)
+}
+```
+
+---
+
+### **Concluding Remarks**
+
+- **Understand the Context**: Always interpret your results in the context of your research questions and the variables involved.
+- **Check Assumptions**: Validate the assumptions of ordinal logistic regression for your data.
+- **Consider Additional Analysis**: You might want to explore interaction terms or alternative models if certain predictors are not significant but are theoretically important.
+- **Consult Resources**: For further reading, consider resources on interpreting ordinal logistic regression, such as:
+
+  - **Books**: "Applied Ordinal Logistic Regression Using Stata" by Xing Liu
+  - **Online Tutorials**: University statistical consulting websites often have guides.
+
+Feel free to ask if you need further clarification on any part of the results or if you have additional questions!

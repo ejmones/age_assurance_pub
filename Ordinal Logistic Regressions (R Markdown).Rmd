@@ -1,0 +1,2637 @@
+---
+title: "Ordinal Logistic Regressions (R Markdown)"
+author: "J.M."
+date: "2024-09-05"
+output: html_document
+---
+
+This R Markdown takes into account our Likert Data
+
+
+```{r Libraries}
+# Working with Excel Files
+library(readxl)  # To read Excel files
+
+# Statistical Analysis/Modeling
+library(ISLR2)  # Datasets and functions for An Introduction to Statistical Learning
+library(AER)  # Applied Econometrics with R
+library(stats)
+library(nortest) # To test for normality in functions
+
+# Creating Tables and Outputs
+library(gt)  # Grammar of tables
+library(xtable)  # Export tables to LaTeX or HTML
+
+# Visual Annotations and Multcomp
+library(multcompView)  # Functions for multiple comparison methods
+library(ggsignif)  # Statistical significance of ggplot plots
+
+# HTML/Website Screenshots
+library(webshot2)  # A utility to take screenshots of web pages
+
+#library(Hmisc)
+library(MASS) # For the polr() function needed for ordinal logistic regression
+# MUST use MASS::polr() to avoid conflicts with ordinal log regressions!
+
+# Augment the output of models
+library(broom)
+
+# Basic Data Manipulation and Visualization
+library(tidyverse)  # Includes ggplot2, dplyr, tidyr, readr, purrr, tibble
+
+```
+
+## Data Prep
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_September 6, 2024_13.58.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 28, 2024_12.27.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_August 28, 2024_08.03.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- FRA.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data2 <- AUS.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name2 <- get_country_name(excel_data2, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+# Print to confirm
+print(paste("Country:", country_name2, "; Date:", current_date_formatted))
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data2.mini <- excel_data2[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data2.mini <- excel_data2.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data2.mini <- excel_data2.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+
+age_assur2.mini <- excel_data2.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur2.mini <- age_assur2.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+#Renames two columns
+excel_data2.mini <- excel_data2.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+
+
+
+## R Markdown
+
+
+Mann-Whitney test: To test for a difference in scoring tendencies between group1 and group2, use a Mann-Whitney test. (This is the same as a two-sample wilcoxon test)
+```{r Mann-Whitney test}
+wilcox.test(score~ sex, data = dat)
+
+```
+If p-value is < 0.05, we can reject the null hypothess that group1 and group2 have the same scoring tendency at the 5% level.
+
+
+
+
+Columns:
+[1] "Online gaming sites"        "Adult content/pornography"  "Gambling"                  
+ [4] "Tobacco/vaping sales"       "Dating apps"                "Anonymous social media"    
+ [7] "Non-anonymous social media" "Gig economy platforms"      "Vacation rental sites"     
+[10] "Subscription services"      "Firearms/ammunition sales"  "Online pharmacies"         
+[13] "Virtual reality worlds"     "News"                       "Mature Literature"         
+```{r Mann-Whitney test (15 Websites between countries)}
+
+
+
+# Sample countries and types (replace with your actual data)
+countries <- unique(excel_data.mini$Country)  # list of all countries
+website_types <- colnames(excel_data.mini[,19:33])
+# Collect results
+results <- list()
+
+# Converting selected columns to numeric
+excel_data.mini[,19:33] <- mutate_at(excel_data.mini[,19:33], vars(1:15), as.numeric)
+
+# Collect results
+results <- data.frame(
+  Country1 = character(),
+  Country2 = character(),
+  WebsiteType = character(),
+  PValue = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through all pairs of countries
+for (i in 1:(length(countries)-1)) {
+  for (j in (i+1):length(countries)) {
+    country1 <- countries[i]
+    country2 <- countries[j]
+    
+    # Subset data for the two countries
+    subset_data <- excel_data.mini[excel_data.mini$Country %in% c(country1, country2), ]
+    
+    # Loop through all website types
+    for (website_type in website_types) {
+      if (website_type %in% colnames(subset_data)) {  # Check if the website type exists in the data
+        test_result <- wilcox.test(subset_data[[website_type]] ~ subset_data$Country)
+        
+        # Add result to data frame
+        results <- rbind(results, data.frame(
+          Country1 = country1,
+          Country2 = country2,
+          WebsiteType = website_type,
+          PValue = test_result$p.value
+        ))
+      }
+    }
+  }
+}
+
+# Sort results by PValue in descending order
+results <- results %>% arrange(PValue)
+
+significance_level <- 0.05
+# Generate a GT table for the summary dataframe
+gt_table <- results %>%
+  gt() %>%
+  tab_header(
+    title = "Mann-Whitney Cross-Country Comparison Results",
+    subtitle = paste("Australia, France, India: ", "Significant Differences Between Countries")
+  ) %>%
+  fmt_number(
+    columns = c(Country1, Country2, WebsiteType, PValue),
+    decimals = 4
+  ) %>%
+  cols_label(
+    Country1 = "Country 1",
+    Country2 = "Country 2",
+    WebsiteType = "Website Type",
+    PValue = "P-Value"
+  ) %>%
+  data_color(
+    columns = c(PValue),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an image file
+gtsave(gt_table, file.path("Pictures", paste0("mann_whitney_results.html")))
+
+```
+
+
+
+
+```{r Mann-Whitney test (15 Websites between parents and non-parents)}
+
+
+
+# Creates copy of the dataset for the chunk
+excel_data.copy <- excel_data.mini
+
+# Adjust parent status based on responses
+excel_data.copy <- excel_data.copy %>%
+  mutate(parent = case_when(
+    parent %in% c("2.0") ~ 'parent',
+    parent %in% c("3.0") ~ 'non-parent',
+    TRUE ~ NA_character_
+  ))
+
+
+# List of unique parent statuses
+parents <- unique(excel_data.copy$parent)  # possible values are 'parent' and 'non-parent'
+website_types <- colnames(excel_data.copy[,19:33])
+
+
+# Collect results
+results <- data.frame(
+  ParentStatus1 = character(),
+  ParentStatus2 = character(),
+  WebsiteType = character(),
+  PValue = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Converting selected columns to numeric
+excel_data.copy[,19:33] <- mutate_at(excel_data.copy[,19:33], vars(1:15), as.numeric)
+
+# Loop through all pairs of parent statuses (parent and non-parent)
+for (i in 1:(length(parents)-1)) {
+  for (j in (i+1):length(parents)) {
+    parent_status1 <- parents[i]
+    parent_status2 <- parents[j]
+    
+    # Subset data for the two parent statuses
+    subset_data <- excel_data.copy[excel_data.copy$parent %in% c(parent_status1, parent_status2), ]
+    
+    # Loop through all website types
+    for (website_type in website_types) {
+      if (website_type %in% colnames(subset_data)) {  # Check if the website type exists in the data
+        test_result <- wilcox.test(subset_data[[website_type]] ~ subset_data$parent)
+        
+        # Add result to data frame
+        results <- rbind(results, data.frame(
+          ParentStatus1 = parent_status1,
+          ParentStatus2 = parent_status2,
+          WebsiteType = website_type,
+          PValue = test_result$p.value
+        ))
+      }
+    }
+  }
+}
+
+# Sort results by PValue in descending order
+results <- results %>% arrange(PValue)
+
+significance_level <- 0.05
+# Generate a GT table for the summary dataframe
+gt_table <- results %>%
+  gt() %>%
+  tab_header(
+    title = "Mann-Whitney Parent Status Comparison Results",
+    subtitle = paste0(country_name, ": Significant Differences Between Parents and Non-Parents")
+  ) %>%
+  fmt_number(
+    columns = c(ParentStatus1, ParentStatus2, WebsiteType, PValue),
+    decimals = 4
+  ) %>%
+  cols_label(
+    ParentStatus1 = "Parent Status 1",
+    ParentStatus2 = "Parent Status 2",
+    WebsiteType = "Website Type",
+    PValue = "P-Value"
+  ) %>%
+  data_color(
+    columns = c(PValue),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an image file
+gtsave(gt_table, file.path("Pictures", paste0(country_name," parents mann_whitney_results.png")))
+```
+
+
+
+
+
+
+
+```{r Investigate loop function ()}
+# Loop through all pairs of parent statuses (parent and non-parent)
+for (i in 1:(length(parents)-1)) {
+  for (j in (i+1):length(parents)) {
+    parent_status1 <- parents[i]
+    parent_status2 <- parents[j]
+    
+    # Print the parent statuses being compared
+    message("Comparing parent_status1: ", parent_status1, " with parent_status2: ", parent_status2)
+    
+    # Subset data for the two parent statuses
+    subset_data <- excel_data.copy[excel_data.copy$parent %in% c(parent_status1, parent_status2), ]
+    
+    # Print subset size to ensure correct subsetting
+    message("Subset size: ", nrow(subset_data))
+    
+    # Loop through all website types
+    for (website_type in website_types) {
+      if (website_type %in% colnames(subset_data)) {  # Check if the website type exists in the data
+        test_result <- wilcox.test(subset_data[[website_type]] ~ subset_data$parent)
+        
+        # Print the p-value of the test result
+        message("WebsiteType: ", website_type, " P-value: ", test_result$p.value)
+        
+        # Add result to data frame
+        results <- rbind(results, data.frame(
+          ParentStatus1 = parent_status1,
+          ParentStatus2 = parent_status2,
+          WebsiteType = website_type,
+          PValue = test_result$p.value
+        ))
+      }
+    }
+  }
+}
+
+
+```
+```{r Proportions Test}
+```
+
+Example with Real Data
+
+Suppose you have real counts as follows:
+
+    CountryA: 120 approvals, 80 disapprovals
+    CountryB: 150 approvals, 50 disapprovals
+
+
+```{r Use To Compare Approval for GovID}
+
+# First country
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+
+# Note: I made a massive mistake. Instead of nrow(excel_data.mini), I placed n.
+# Prepare and rename columns
+# Prepare and rename columns
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, n) %>%
+  arrange(variable, value) %>%
+  spread(value, n) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ round(., 3))) %>%
+  mutate(across(where(is.numeric), ~ as.numeric(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+
+
+# First country
+# Select the specific columns
+selected_columns2 <- excel_data2.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data2 <- selected_columns2 %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+
+# Note: I made a massive mistake. Instead of nrow(excel_data.mini), I placed n.
+# Prepare and rename columns
+# Prepare and rename columns
+value_counts2 <- long_data2 %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, n) %>%
+  arrange(variable, value) %>%
+  spread(value, n) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ round(., 3))) %>%
+  mutate(across(where(is.numeric), ~ as.numeric(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+
+
+Adult_GovID_country1 = value_counts.at[1,'GovID'] # = 86
+Adult_GovID_country2 = value_counts2[1,'GovID'] # = 97
+
+Adult_GovID_country1 <- as.integer(Adult_GovID_country1)
+Adult_GovID_country2 <- as.integer(Adult_GovID_country2)
+
+
+# Example data
+country_data <- data.frame(
+  country = c(country_name, country_name2),
+  GovID_support = c(Adult_GovID_country1, Adult_GovID_country2),  # Number of people supporting GovID in respective countries
+  total_responses = c(nrow(excel_data.mini), nrow(excel_data2.mini))  # Total number of responses in respective countries
+)
+
+# Aggregate data for each country
+agg_data <- country_data %>%
+  group_by(country) %>%
+  summarize(
+    people_supporting_GovID = sum(GovID_support),
+    total_respondents = sum(total_responses)
+  )
+
+# Extract counts for the test
+australia_govID_support <- agg_data$people_supporting_GovID[agg_data$country == "Australia"]
+australia_total <- agg_data$total_respondents[agg_data$country == "Australia"]
+
+france_govID_support <- agg_data$people_supporting_GovID[agg_data$country == "France"]
+france_total <- agg_data$total_respondents[agg_data$country == "France"]
+
+# Perform proportion test
+prop_test_result <- prop.test(
+  x = c(australia_govID_support, france_govID_support),
+  n = c(australia_total, france_total)
+)
+
+# Display results
+print(prop_test_result)
+
+
+
+
+mytable <- xtabs(~Treatment + Improved, data = Arthritis)
+chisq.test(mytable)
+```
+
+Kruskel-Wallis test:
+```{r Kruskel-Wallis}
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Convert specific columns to numeric
+excel_data.mini_reg[, 19:33] <- lapply(excel_data.mini_reg[, 19:33], as.numeric)
+
+excel_data.mini_reg$sum <- rowSums(excel_data.mini_reg[, 19:33])
+
+# Ensure predictor variables (parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(parent)
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+anova(lm(sum ~ Country, data = excel_data.mini_reg))
+t.test(sum ~ Country, data = excel_data.mini_reg)
+boxplot(sum ~ Country, data = excel_data.mini_reg, ylab = "Sum of scores")
+
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  formula <- as.formula(paste(valid_name, "~ Country"))
+  
+  model <- anova(lm(formula, data = excel_data.mini_reg))
+  
+  model_summaries[[original_name]] <- model
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, term, estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value, everything())
+
+# Indicate significance
+significance_level <- 0.10 # Adjust if needed
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    term == 'parent2.0' ~ "With Children < 18",
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Regression Analysis Summary",
+    subtitle = paste(country_name, ": Significance of support towards age verification methods")
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Support_Method = "Method",
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    r.squared = html("R<sup>2</sup>"),
+    adj.r.squared = html("Adj R<sup>2</sup>"),
+    f.value = "F-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an image file
+gtsave(gt_table, file.path("Pictures", paste0(country_name, "different intercept regression_significance_summaries ", current_date, ".html")))
+```
+```{r Kruskal-Wallis Test}
+
+excel_data.copy <- excel_data.mini
+age_assur.copy <- age_assur.mini
+age_assur.copy$Country  <- excel_data.copy$Country
+age_assur.copy$Gambling
+
+barplot(table(excel_data.copy$Country, excel_data.copy$`Mature Literature`),
+        beside=T, args.legend = list(cex=0.5),
+        cex.names=0.7, legend.text = c("AUS","FRA","IND"))
+
+age_assur.kw <- list()
+
+# Get column names for the range you specified (1:15)
+column_names <- colnames(age_assur.copy)[1:15]
+
+
+
+# Initialize a data frame to store the results
+results_df <- data.frame(Website = character(),
+                         P_Value = numeric(),
+                         stringsAsFactors = FALSE)
+
+for (i in column_names) {
+  formula <- as.formula(paste0('`', i, '`', "~ Country"))
+  result <- kruskal.test(formula, data = age_assur.copy)
+  # Round the p-value to 3 decimal places before adding to the DataFrame
+  p_value_rounded <- round(result$p.value, 5)
+  results_df <- rbind(results_df, data.frame(Website = i, 
+                                             P.Value = p_value_rounded))
+}
+
+sorted_results_df <- results_df %>% arrange(desc(P.Value))
+
+
+
+# Ensure rounding for display
+sorted_results_df$P.Value <- formatC(sorted_results_df$P.Value, format = "f", digits = 5)
+
+# Print the sorted data frame
+print(sorted_results_df)
+
+# Print the table with xtable specifying digits correctly
+print(
+  xtable(sorted_results_df,
+         caption = paste0("<b> Kruskal-Wallis Tests</b><br>", "")),
+  caption.placement = "top",
+  type = "html",
+  file = "Kruskal-Wallis Tests.html",
+  digits = c(0, 0, 5),  # Ensure digits are correctly set for xtable
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+```
+
+Chi-square test: The Chi-Square test can be used if we combine the data into nominal categories.
+```{r Chi-Square test}
+
+table(dat$nominal, dat$sex)
+table(dat$nominal, dat$degree)
+
+
+# Test if there's a significant difference between the expected frequencies and the observed frequencies between the specified (nominal) scoring categories of the sexes. The second Chi-squared test tests if there's a significant difference between the expected frequencies and the observed frequencies between the specified scoring categories of people with different post-school education levesl.
+chisq.test(table(dat$nominal, dat$sex))
+# If p < 0.05, reject the null hypothesis of equal proportions.
+
+chisq.test(table(dat$nominal, dat$degree))
+
+
+
+
+```
+
+```{r Sum}
+
+
+excel_data.olr <- excel_data.mini
+
+
+age_assur.nums <- data.frame(lapply(excel_data.olr[,19:33], as.numeric))
+# Add a new column 'sum_19_33' that sums up each row for columns 19 to 33
+excel_data.olr$sum <- rowSums(age_assur.nums)
+hist(excel_data.olr$sum, xlab = "Sum of scores", main ="")
+boxplot(sum ~ parent, data = excel_data.olr, names = c("Parent", "Not a Parent"), ylab= "Sum of scores")
+boxplot(sum ~ Country, data = excel_data.olr, names = c("Australia", "France","India"), ylab= "Sum of scores")
+
+t.test(sum ~ gender, data = excel_data.olr)
+
+
+```
+
+
+
+
+
+```{r Specific % Value for Desired Methods 2 ("high-risk")}
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+
+# Note: I made a massive mistake. Instead of nrow(excel_data.mini), I placed n.
+# Prepare and rename columns
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = nrow(excel_data.mini), proportion = n / total * 100) %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  filter(variable %in% c("Adult Content/Pornography", "Dating Apps", "Firearms/Ammunition Sales", "Gambling", "Online Pharmacies", "Tobacco/Vaping Sales")) %>%
+  dplyr::select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%  # Round to 2 decimal points
+  mutate(across(where(is.numeric), ~ as.numeric(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+# Bold the highest values in each row
+value_counts <- value_counts %>%
+  rowwise() %>%
+  mutate(across(GovID:`Device-led Authentication`, ~ ifelse(. == max(c_across(GovID:`Device-led Authentication`), na.rm = TRUE) &
+                                                          . != 0, 
+                                                          paste0('<b>', ., '</b>'), 
+                                                          as.character(.))))
+
+# Convert back to data frame
+value_counts <- as.data.frame(value_counts)
+
+# Replace NAs with 0
+value_counts[is.na(value_counts)] <- 0
+
+# Print the table with xtable
+print(
+  xtable(value_counts, 
+         caption = paste0("<b>", country_name, "</b>", ":<b> Age Assurance Desired Methods Table</b><br>", "(% Comfortable With Each Method Type)")), 
+  caption.placement = "top", 
+  type = "html", 
+  file = paste0(country_name, "value_counts_table.png"),
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+```
+
+
+## Ordinal Logistic Regression Model
+```{r OLR Model}
+library(MASS)
+mod <- polr(Online.gaming.sites ~ parent, data = excel_data.olr, Hess = T)
+summary(mod)
+
+mod <- polr(Online.gaming.sites ~ age + gender + parent, data = excel_data.mini_reg, Hess = T)
+summary(mod)
+
+# Calculate p-value
+coeffs <- coef(summary(mod))
+p <- pnorm(abs(coeffs[, "t value"]), lower.tail = FALSE) * 2
+cbind(coeffs, "p value" = round(p,3))
+
+exp(coef(mod))
+```
+
+```{r Parametrics Inferences}
+hist($sum, xlab= "Sum of scores", main = "")
+
+boxplot(sum~ sex, data = dataframe, names = c("Female","Male"), 
+        ylab = "Sum of scores")
+
+t.test(sum~ sex, data = dataframe)
+# If p-value < 0.05, reject null hypothesis. It's like that the average scores of Males and Females are unequal from box plot.
+
+
+# Two-way ANOVA
+boxplot(sum ~ degree, data = dataframe,
+        names = c("BS","MS","PhD","None","Other"),
+        ylab = "Sum of scores")
+
+anova(lm(sum ~ degree + income, data = dataframe))
+
+
+```
+
+
+```{r Merge Photos}
+
+
+
+library(magick)
+
+# Read the images
+image1 <- image_read("Pictures/Australia parents mann_whitney_results.png")
+image2 <- image_read("Pictures/France parents mann_whitney_results.png")
+image3 <- image_read("Pictures/India parents mann_whitney_results.png")
+
+# Combine the images side by side
+combined_image <- image_append(c(image1, image2, image3), stack = FALSE)
+
+# Display the combined image
+print(combined_image)
+
+# Save the combined image to a file
+image_write(combined_image, "Pictures/Significant differences between parents.jpg")
+
+
+
+```
+
+
+
+```{r Generate Photos}
+
+
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- FRA.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+
+# Converting selected columns to numeric
+age_assur.mini <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- gather(age_assur.mini, key = "Website.Type", value = "Value")
+
+# Calculating overall mean  
+overall_mean <- mean(gathered_data$Value, na.rm = TRUE)
+
+# Calculating the mean and standard deviation for each website type
+summary_stats <- gathered_data %>%
+  group_by(Website.Type) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    StdDev = sd(Value, na.rm = TRUE)
+  )
+
+
+# Calculate the percent who support age verification on specific platforms by those who answer 4 or 5 on the five start scale.
+support_stats <- gathered_data %>%
+  group_by(Website.Type) %>%
+  summarize(
+    SupportPercent = mean(Value >= 4, na.rm = TRUE) * 100
+  )
+
+# Merging summary_stats with support_stats
+summary_stats <- summary_stats %>%
+  left_join(support_stats, by = "Website.Type")
+
+summary_stats <- summary_stats %>%
+  arrange(desc(SupportPercent))
+
+
+# Changing the column name from 'B' to 'Y'
+colnames(summary_stats)[colnames(summary_stats) == "Website.Type"] <- "Website Type"
+
+
+# Generate a GT summary table with Mean, StdDev, and Support Percent
+gt_table <- summary_stats %>%
+  gt() %>%
+  tab_header(
+    title = "Support/Opposition For Website Types",
+    subtitle = paste(country_name)
+  ) %>%
+  fmt_number(
+    columns = c(Mean, StdDev, SupportPercent),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Mean = "Mean",
+    StdDev = "Std. Error",
+    SupportPercent = "Percent Support (4 or 5)"
+  )
+
+# Save the GT table as an HTML file
+gtsave(gt_table, filename = paste(country_name, "_percent_support_age_assurance_methods_", current_date, ".png"))
+
+
+```
+
+
+## Ordinal Logistic Regression Model 2.0
+```{r Libraries}
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(distributional)
+```
+
+```{r OLR 2.0 09-17-2024}
+
+
+age_assur.numeric <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+excel_data.olr <- excel_data.mini
+
+
+excel_data.olr[,19:33] <- age_assur.numeric
+
+# Exclude non-binary and "prefer not to disclose"
+excel_data.olr <- subset(excel_data.olr, gender %in% c("1.0", "2.0"))
+
+
+# Editing the columns
+excel_data.olr <- excel_data.olr %>%
+  mutate(
+    gender = case_when(
+      gender == "1.0" ~ "Woman",
+      gender == "2.0" ~ "Man",
+      gender == "gender3.0" ~ "Non-binary",
+      gender == "gender4.0" ~ "Prefer not to disclose",
+      TRUE ~ gender  # This keeps the original value if no condition is met
+    ),
+    age = case_when(
+      age == "3.0" ~ "ages 25-34",
+      age == "4.0" ~ "ages 35-44",
+      age == "5.0" ~ "ages 45-54",
+      age == "6.0" ~ "ages 55-64",
+      age == "7.0" ~ "ages 65+",
+      TRUE ~ age  # This keeps the original value if no condition is met
+    ),
+    parent = case_when(
+      parent == "2.0" ~ "With Children < 18",
+      parent == "3.0" ~ "No children < 18",
+      TRUE ~ parent  # This keeps the original value if no condition is met
+    )
+  )
+
+
+
+
+library(stargazer)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(broom)
+library(htmlTable)
+
+# Model fitting and exporting to HTML and PNG 
+results_list <- list()
+model_list <- list()
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.olr[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.olr)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+
+for (i in 19:33) {
+  valid_name <- name_map$valid_name[i - 18]
+  
+  formula <- paste0("as.factor(", valid_name, ") ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Tidy the results
+  tidy_model <- tidy(model)
+  tidy_model$model <- valid_name
+  
+  # Append to results list
+  results_list[[i - 18]] <- tidy_model
+  model_list[[valid_name]] <- model
+
+  # Plot the model and save as PNG
+  plot <- plot_model(model, title = valid_name)
+  ggsave(filename = paste0("model_plot_", valid_name, ".png"), plot = plot, width = 8, height = 6)
+}
+
+# Combine all results into a single data frame
+all_results <- do.call(rbind, results_list)
+
+# Create the HTML table
+html_output <- htmlTable(all_results)
+
+# Save the HTML table to a file
+cat(html_output, file = "tidy_model_summaries.html")
+
+# Export models to HTML file using stargazer
+stargazer(model_list, type = "html", out = "model_summaries.html")
+
+
+
+#____________________________________________________________________
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  
+  formula <- paste0(paste("as.factor(",valid_name,")"), " ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Print model summary
+  summary(model)
+  
+
+}
+
+
+```
+
+```{r Optional Visualization for OLR}
+
+  # Extract coefficients, excluding thresholds (cut points)
+  coef_summary <- summary(model)
+  coef_table <- coef_summary$coefficients
+  coef_names <- rownames(coef_table)
+  
+  # Extract confidence intervals, ensuring they match predictor coefficients
+  ci <- confint(model)
+  
+  # Identify predictor coefficients (exclude thresholds)
+  predictor_coefs <- coef_table[coef_names %in% rownames(ci), ]
+  
+  # Create a data frame with predictor coefficients and confidence intervals
+  coefficients_df <- as.data.frame(cbind(predictor_coefs[, 1:2], ci))
+  colnames(coefficients_df) <- c("Estimate", "Std. Error", "2.5 %", "97.5 %")
+  coefficients_df$Variable <- rownames(coefficients_df)
+  coefficients_df <- subset(coefficients_df, Variable != "(Intercept)")
+
+# Create the coefficient plot
+  ggplot(coefficients_df, aes(x = Variable, y = Estimate)) + geom_point() + 
+    geom_errorbar(aes(ymin = `2.5 %`, ymax = `97.5 %`), width = 0.2) +
+    labs(title = "Coefficient Plot with Confidence Intervals",
+       x = "Predictor",
+       y = "Estimate") +
+    theme_minimal() +
+    coord_flip() # Flip the coordinates for better readability
+
+```
+
+
+```{r Proportional Odds Assumption Test}
+
+age_assur.numeric <- mutate_at(age_assur.mini, vars(1:15), as.numeric)
+excel_data.olr <- excel_data.mini
+
+
+excel_data.olr[,19:33] <- age_assur.numeric
+
+# Exclude non-binary and "prefer not to disclose"
+excel_data.olr <- subset(excel_data.olr, gender %in% c("1.0", "2.0"))
+
+
+
+# Fit the ordinal logistic regression model
+model <- polr(as.factor(`Dating apps`) ~ age + gender + parent, data = excel_data.olr, Hess = TRUE)
+
+# Print model summary
+summary(model)
+
+# Perform the Brant test to check the proportional odds assumption
+brant_test <- brant(model)
+
+# Print the results of the Brant test
+print(brant_test)
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.olr[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.olr)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  
+  formula <- paste0(paste("as.factor(",valid_name,")"), " ~ age + gender + parent")
+  
+  model <- polr(formula, data = excel_data.olr, Hess = TRUE)
+  
+  # Print model summary
+  summary(model)
+
+  # Perform the Brant test to check the proportional odds assumption
+  brant_test <- brant(model)
+
+}
+
+
+
+```
+
+
+
+```{r Convert Likert Scale Into Binary | Binary Regression}
+
+# Creates binary dataframe
+age_assur.binary <- age_assur.mini
+
+likert_columns <- grep("", names(age_assur.mini))
+
+# Convert Likert-scale to binary for all identified columns
+age_assur.binary[likert_columns] <- lapply(age_assur.binary[likert_columns], function(column) ifelse(column >= 4, 1, 0))
+
+
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+# Exclude non-binary and "prefer not to disclose"
+#excel_data.olr <- subset(excel_data.olr, gender %in% c("1.0", "2.0"))
+
+
+
+# Editing the columns
+excel_data.mini_reg <- excel_data.mini_reg %>%
+  mutate(
+    gender = case_when(
+      gender == "1.0" ~ " Woman",
+      gender == "2.0" ~ " Man",
+      gender == "gender3.0" ~ " Non-binary",
+      gender == "gender4.0" ~ " Prefer not to disclose",
+      TRUE ~ gender  # This keeps the original value if no condition is met
+    ),
+    age = case_when(
+      age == "2.0" ~ " 18-24",
+      age == "3.0" ~ " 25-34",
+      age == "4.0" ~ " 35-44",
+      age == "5.0" ~ " 45-54",
+      age == "6.0" ~ " 55-64",
+      age == "7.0" ~ " 65+",
+      TRUE ~ age  # This keeps the original value if no condition is met
+    ),
+    parent = case_when(
+      parent == "2.0" ~ " With Children < 18",
+      parent == "3.0" ~ " No children < 18",
+      TRUE ~ parent  # This keeps the original value if no condition is met
+    ),
+    Country = case_when(
+      Country == "France" ~ " France",
+      Country == "France" ~ " France",
+      Country == "India" ~ " India",
+      TRUE ~ Country  # This keeps the original value if no condition is met
+    )
+  )
+
+
+
+# Makes columns 19:33 binary
+excel_data.mini_reg[,19:33] <- age_assur.binary
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Convert specific columns to numeric
+#excel_data.mini_reg[, 19:33] <- lapply(excel_data.mini_reg[, 19:33], as.numeric)
+
+
+# Ensure predictor variables (parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(parent)
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# Run regression models for each support column and diagnose them too.
+for (i in 19:33) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  formula <- as.formula(paste(valid_name, "~ age + gender + parent + Country"))
+  
+  model <- lm(formula, data = excel_data.mini_reg)
+
+  #Glm version
+#  model <- glm(formula, data = excel_data.mini_reg, family = binomial)
+  
+  coeftest_summary <- coeftest(model) # Use coeftest for robust standard errors
+  
+  # Convert coeftest summary to tidy format
+  tidy_model <- tidy(coeftest_summary) %>%
+    mutate(Support_Method = original_name,  # Add the original name
+           r.squared = summary(model)$r.squared, # Extract regular R-squared
+           adj.r.squared = summary(model)$adj.r.squared, # Extract adjusted R-squared
+           f.value = summary(model)$fstatistic[1], # Extract F-value
+           ) 
+      
+  model_summaries[[original_name]] <- tidy_model
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, term, estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value, everything())
+
+# Indicate significance
+significance_level <- 0.05 # Adjust if needed
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    term == 'parent2.0' ~ "With Children < 18",
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Binary Regression Analysis Summary (Linear)",
+    subtitle = paste("Cross Country: Significance of support towards age verification methods")
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Support_Method = "Method",
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    r.squared = html("R<sup>2</sup>"),
+    adj.r.squared = html("Adj R<sup>2</sup>"),
+    f.value = "F-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an image file
+gtsave(gt_table, file.path("Pictures", paste0("Cross-Country linear binary different intercept regression_significance_summaries ",  ".png")))
+
+
+```
+
+
+Social Media Regression Analysis Summary (Linear)
+
+
+
+```{r Regression (support ~ demographics + country * gender)}
+
+
+# Create a copy for this R chunk
+excel_data.mini_reg <- excel_data.mini
+
+# Exclude non-binary and "prefer not to disclose"
+excel_data.mini_reg <- subset(excel_data.mini_reg, gender %in% c("1.0", "2.0"))
+
+
+
+# Editing the columns
+excel_data.mini_reg <- excel_data.mini_reg %>%
+  mutate(
+    gender = case_when(
+      gender == "1.0" ~ " Woman",
+      gender == "2.0" ~ " Man",
+      gender == "gender3.0" ~ " Non-binary",
+      gender == "gender4.0" ~ " Prefer not to disclose",
+      TRUE ~ gender  # This keeps the original value if no condition is met
+    ),
+    age = case_when(
+      age == "2.0" ~ " 18-24",
+      age == "3.0" ~ " 25-34",
+      age == "4.0" ~ " 35-44",
+      age == "5.0" ~ " 45-54",
+      age == "6.0" ~ " 55-64",
+      age == "7.0" ~ " 65+",
+      TRUE ~ age  # This keeps the original value if no condition is met
+    ),
+    parent = case_when(
+      parent == "2.0" ~ " With Children < 18",
+      parent == "3.0" ~ " No children < 18",
+      TRUE ~ parent  # This keeps the original value if no condition is met
+    ),
+    Country = case_when(
+      Country == "Australia" ~ " Australia",
+      Country == "France" ~ " France",
+      Country == "India" ~ " India",
+      TRUE ~ Country  # This keeps the original value if no condition is met
+    )
+  )
+
+
+
+# Makes columns 19:33 binary
+#excel_data.mini_reg[,19:33] <- age_assur.binary
+
+
+# Select the specific columns
+selected_columns <- excel_data.mini_reg[, c(19:33)]
+
+# Convert specific columns to numeric
+#excel_data.mini_reg[, 19:33] <- lapply(excel_data.mini_reg[, 19:33], as.numeric)
+
+
+# Ensure predictor variables (parent status) are properly defined
+pred_vars <- excel_data.mini_reg %>% select(parent)
+
+# Handle column names for the dependent variables
+dep_var_cols <- colnames(excel_data.mini_reg[, 19:33])
+valid_names <- make.names(dep_var_cols)
+
+# Apply the valid names to the data frame
+colnames(excel_data.mini_reg)[19:33] <- valid_names
+
+# Create a data frame to map original names to valid names
+name_map <- data.frame(
+  original_name = dep_var_cols,
+  valid_name = valid_names
+)
+
+# Create an empty list to store model summaries
+model_summaries <- list()
+
+# For social media
+#specific_columns <- c(24, 25, 31)
+
+# For all
+specific_columns <- c(19:33)
+
+
+# Run regression models for each support column and diagnose them too.
+for (i in specific_columns) {
+  original_name <- name_map$original_name[i - 18]  # Adjust indexing
+  valid_name <- name_map$valid_name[i - 18]        # Adjust indexing
+  
+  formula <- as.formula(paste(valid_name, "~ age + gender + parent + Country"))
+  
+  model <- lm(formula, data = excel_data.mini_reg)
+
+  #Glm version
+#  model <- glm(formula, data = excel_data.mini_reg, family = binomial)
+  
+  coeftest_summary <- coeftest(model) # Use coeftest for robust standard errors
+  
+  # Convert coeftest summary to tidy format
+  tidy_model <- tidy(coeftest_summary) %>%
+    mutate(Support_Method = original_name,  # Add the original name
+           r.squared = summary(model)$r.squared, # Extract regular R-squared
+           adj.r.squared = summary(model)$adj.r.squared, # Extract adjusted R-squared
+           f.value = summary(model)$fstatistic[1], # Extract F-value
+           ) 
+      
+  model_summaries[[original_name]] <- tidy_model
+}
+
+# Convert the list of summaries into a single dataframe
+summary_df <- bind_rows(model_summaries)
+
+# Reorder columns for better readability
+summary_df <- summary_df %>% select(Support_Method, term, estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value, everything())
+
+# Indicate significance
+significance_level <- 0.05 # Adjust if needed
+summary_df <- summary_df %>%
+  mutate(Significant = ifelse(p.value < significance_level, "Yes", "No"))
+
+# View the summary dataframe with significance indication
+print(summary_df)
+
+summary_df <- summary_df %>%
+  mutate(term = case_when(
+    term == "gender2.0" ~ "Man",
+    term == "gender3.0" ~ "Non-binary",
+    term == "gender4.0" ~ "Prefer not to disclose",
+    term == "age3.0" ~ "ages 25-34",
+    term == "age4.0" ~ "ages 35-44",
+    term == "age5.0" ~ "ages 45-54",
+    term == "age6.0" ~ "ages 55-64",
+    term == "age7.0" ~ "ages 65+",
+    term == 'parent2.0' ~ "With Children < 18",
+    term == 'parent3.0' ~ "No children < 18",
+    TRUE ~ term
+  ))
+
+# Generate a GT table for the summary dataframe
+gt_table <- summary_df %>%
+  gt() %>%
+  tab_header(
+    title = "Social Media Regression Analysis Summary (Linear)",
+    subtitle = paste("Cross Country: Significance of support towards age verification methods")
+  ) %>%
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value, r.squared, adj.r.squared, f.value),
+    decimals = 3
+  ) %>%
+  cols_label(
+    Support_Method = "Method",
+    term = "Term",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "Statistic",
+    p.value = "P-Value",
+    r.squared = html("R<sup>2</sup>"),
+    adj.r.squared = html("Adj R<sup>2</sup>"),
+    f.value = "F-Value",
+    Significant = "Significant"
+  ) %>%
+  data_color(
+    columns = c(p.value),
+    colors = scales::col_bin(
+      bins = c(0, significance_level, 1),
+      palette = c("red", "lightgrey")
+    )
+  )
+
+# Save the GT table as an image file
+gtsave(gt_table, file.path("Pictures", paste0("Social Media Regression Analysis Summary (Linear)",  ".html"))) 
+
+
+
+
+formula <- as.formula(paste(valid_name, "~ age + gender + parent + Country + (gender * Country)"))
+model <- lm(formula, data = excel_data.mini_reg)
+coeftest_summary <- coeftest(model)
+
+```
+
+
+
+```{r Sum}
+
+
+excel_data.dcrm <- excel_data.mini #dcrm as in discouragement
+
+
+age_assur.nums <- data.frame(lapply(excel_data.dcrm[,19:33], as.numeric))
+# Add a new column 'sum_19_33' that sums up each row for columns 19 to 33
+excel_data.dcrm$sum <- rowSums(age_assur.nums)
+```
+
+```{r data prep for discouragement probability | religion demographics}
+
+# Ensure that 'religion' column is numeric
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(religion = as.numeric(religion))
+
+# Assign anyone who answered 1.0-8.0 as religious (0). Answered 9.0 or 10.0 in religion as irreligious (1).
+# Adjust irreligious status based on free response answers in religion_11_TEXT
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(religious = case_when(
+    religion >= 1.0 & religion <= 8.0 ~ 1, # Anyone who selected a religion (1-8) is religious
+    religion %in% c(9.0, 10.0) ~ 0, # Atheist and agnostic (9,10) considered as irreligious
+    religion_11_TEXT %in% c("Christian", "believer", "Humanity", "Jainism", "Non-denomination Christian", 
+                            "Sikh", "there is only one GOD") ~ 1, # Free response answers indicative of religious status
+    religion_11_TEXT %in% c("N religion", "Non religious", "no religion", "none", "None", "NONE", "None.",
+                            "Not religious.", "Technically catholic but not practicing",
+                            "Solopist") ~ 0, # Free response answers indicative of irreligious status
+    TRUE ~ NA_real_  # Default case, if none of the above conditions are met
+  ))
+
+# Checks proportion who aren't religious (0) or are religious (1)
+table(excel_data.dcrm$religious)
+
+```
+
+```{r Regression (support ~ country + religion + country * religion))}
+
+
+model <- lm(sum ~ Country + religious + Country * religious, data = excel_data.dcrm)
+summary(model)
+
+library(interactions)
+interact_plot(model, pred = religious, modx = Country)
+
+plot(model, which = 1)  # Residuals vs Fitted
+plot(model, which = 2)  # Normal QQ
+```
+
+```{r data prep for discouragement probability | religion demographics}
+
+excel_data.dcrm <- excel_data.mini
+
+# Ensure that 'religion' column is numeric
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(religion = as.numeric(religion))
+
+# Assign anyone who answered 1.0-8.0 as religious (0). Answered 9.0 or 10.0 in religion as irreligious (1).
+# Adjust irreligious status based on free response answers in religion_11_TEXT
+excel_data.dcrm <- excel_data.dcrm %>%
+  mutate(religious = case_when(
+    religion >= 1.0 & religion <= 8.0 ~ 1, # Anyone who selected a religion (1-8) is religious
+    religion %in% c(9.0, 10.0) ~ 0, # Atheist and agnostic (9,10) considered as irreligious
+    religion_11_TEXT %in% c("Christian", "believer", "Humanity", "Jainism", "Non-denomination Christian", 
+                            "Sikh", "there is only one GOD") ~ 1, # Free response answers indicative of religious status
+    religion_11_TEXT %in% c("N religion", "Non religious", "no religion", "none", "None", "NONE", "None.",
+                            "Not religious.", "Technically catholic but not practicing",
+                            "Solopist") ~ 0, # Free response answers indicative of irreligious status
+    TRUE ~ NA_real_  # Default case, if none of the above conditions are met
+  ))
+
+# Checks proportion who aren't religious (0) or are religious (1)
+table(excel_data.dcrm$religious)
+
+```
+
+```{r bar plot}
+#Bar plot
+# Select columns 36 to 50
+
+#excel_data.dcrm <- excel_data.mini
+
+# Assuming `excel_data.dcrm` is your original dataframe.
+
+# Filter the original data to include only relevant columns
+selected_columns <- excel_data.dcrm %>% select(Country, religious)
+
+# Convert the dataframe to long format and include NA counting
+long_data <- selected_columns %>%
+  mutate(religious = as.character(religious)) %>%
+  filter(Country %in% c("Australia", "France", "India")) #%>%
+#  replace_na(list(religious = "Prefer Not To Answer"))
+
+# Count the occurrences of each value for each country
+value_counts <- long_data %>%
+  group_by(Country, religious) %>%
+  tally() %>%
+  mutate(total = sum(n, na.rm = TRUE), proportion = n / total) %>%
+  select(Country, religious, proportion) %>%
+  arrange(Country, religious) %>%
+  spread(religious, proportion) %>%
+  replace(is.na(.), 0)  # Replace 0 for missing proportions
+
+# Transpose data for plotting
+plot_data <- as.data.frame(t(value_counts[,-1]))  # Exclude the 'Country' column
+colnames(plot_data) <- value_counts$Country
+rownames(plot_data) <- rownames(plot_data) <- c(colnames(value_counts)[-1])  # Set row names to religious categories including "Prefer Not To Answer"
+
+# View the proportions
+print(value_counts)
+
+# Adjust margins to accommodate x-axis labels and legend
+par(mar = c(12, 4, 4, 2) + 0.1)  # Increase bottom margin to make space for legend
+
+# Convert proportions to percentages
+plot_data_percent <- plot_data * 100
+
+# Create the bar plot with percentage y-axis
+bar_positions <- barplot(
+  as.matrix(plot_data_percent),
+  beside = TRUE,
+  col = rainbow(nrow(plot_data_percent)),  # Assign colors
+  ylim = c(0, 100),  # Set y-axis range from 0 to 100
+  main = "Proportion of Religiousness by Country",
+  ylab = "Proportion (%)",
+  las = 2,  # Rotate x-axis labels
+  cex.names = 0.8  # Smaller font size for labels
+)
+
+religious_levels <- rownames(plot_data)
+
+legend(
+  x = mean(bar_positions),  # Center the legend beneath the plot
+  y = -50,  # Adjust the "y" position to lie beneath the x-axis labels
+  legend = religious_levels,  # Categories for the legend
+  fill = rainbow(nrow(plot_data_percent)), 
+  cex = 0.72,  # Smaller text size
+  pt.cex = 0.72,  # Smaller points
+  horiz = FALSE,  # Make the legend vertical
+  xpd = TRUE  # Allow drawing outside plot region
+)
+
+# Add horizontal lines at every 10% increment
+abline(h = seq(0, 100, by = 10), col = "black", lty = "dotted")
+
+```
+
+8 days one month
+England: $251
+Britain: $297
+
+7 days one month
+Europe: $319
+
+```{r Regression Diagnostics}
+library(MASS)
+
+
+lm(sum ~ age + gender + `sexual orientation` + race+ parent + religious + Country, data = excel_data.dcrm) %>%
+  step(direction = "backward") %>%
+  summary()
+
+
+summary(model)
+
+
+# Fit the initial model
+initial_model <- lm(sum ~ ., data = excel_data.dcrm[, c(69:80, which(names(excel_data.dcrm) == "sum"))])
+
+# Perform backward elimination
+model <- step(initial_model, direction = "backward")
+
+# Print the summary of the final model
+summary(model)
+
+
+
+library(interactions)
+interact_plot(model, pred = religious, modx = Country)
+
+plot(model, which = 1)  # Residuals vs Fitted
+plot(model, which = 2)  # Normal QQ
+
+lm()
+
+
+# Check the data types and levels of columns 69 to 80
+summary(excel_data.dcrm[, 69:80])
+
+# Convert any factors with a single level or constant numeric variables to numeric
+# Remove any columns with insufficient levels
+
+# Function to check for factors and unique values
+check_columns <- function(df) {
+  insufficient_levels <- sapply(df, function(col) is.factor(col) && length(unique(col)) < 2)
+  constant_columns <- sapply(df, function(col) is.numeric(col) && length(unique(col)) < 2)
+  return(which(insufficient_levels | constant_columns))
+}
+
+# Identify problematic columns
+problematic_cols <- check_columns(excel_data.dcrm[, 69:80])
+
+# Remove problematic columns if any
+clean_data <- excel_data.dcrm[, -problematic_cols]
+
+# Include the 'sum' column in the cleaned data
+clean_data <- cbind(clean_data, sum = excel_data.dcrm$sum)
+
+# Fit the initial model with cleaned data
+initial_model <- lm(sum ~ ., data = clean_data)
+
+# Perform backward elimination
+model <- step(initial_model, direction = "backward")
+
+# Print the summary of the final model
+summary(model)
+
+
+```
+
+```{r Global validation of linear model assumption}
+library(gvlma)
+gvmodel <- gvlma(model)
+summary(gvmodel)
+
+```
+
+
+## Check proportion of support across countries
+
+# Run Data prep chunks first
+
+
+
+
+
+```{r Quick Data Prep}
+# Working with Excel Files
+library(readxl)  # To read Excel files
+
+# Statistical Analysis/Modeling
+library(ISLR2)  # Datasets and functions for An Introduction to Statistical Learning
+library(AER)  # Applied Econometrics with R
+library(stats)
+library(nortest) # To test for normality in functions
+
+# Creating Tables and Outputs
+library(gt)  # Grammar of tables
+library(xtable)  # Export tables to LaTeX or HTML
+
+# Visual Annotations and Multcomp
+library(multcompView)  # Functions for multiple comparison methods
+library(ggsignif)  # Statistical significance of ggplot plots
+
+# HTML/Website Screenshots
+library(webshot2)  # A utility to take screenshots of web pages
+
+#library(Hmisc)
+library(MASS) # For the polr() function needed for ordinal logistic regression
+# MUST use MASS::polr() to avoid conflicts with ordinal log regressions!
+
+# Augment the output of models
+library(broom)
+
+# Basic Data Manipulation and Visualization
+library(tidyverse)  # Includes ggplot2, dplyr, tidyr, readr, purrr, tibble
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_September 11, 2024_11.13.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_September 12, 2024_14.12.xlsx")
+#FRAc.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 21, 2024_07.42.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_September 12, 2024_14.18.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+#This combines all four countries into one
+
+
+#Removes the first row, which is a question.
+AUS.df_modified <- AUS.df[-1,]
+FRA.df_modified <- FRA.df[-1,]
+IND.df_modified <- IND.df[-1,]
+
+AUS.df_modified$Country <- "Australia"
+FRA.df_modified$Country <- "France"
+IND.df_modified$Country <- "India"
+
+# Combine all dataframes into one large dataframe
+combined_df <- rbind(AUS.df_modified, FRA.df_modified, IND.df_modified)
+
+# Check the structure of the combined dataset
+#str(combined_df)
+
+# View the first few rows of the combined dataset
+#head(combined_df)
+
+excel_data <- combined_df
+
+
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data %>% filter(as.numeric(`Q2`) == 1.0) 
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`Finished`) == 1.0) #Filters for those who finished the survey. 
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+#Renames two columns
+excel_data.mini <- excel_data.mini %>%
+  rename(
+    `News` = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
+
+
+```{r Median Values By Website Type}
+# Libraries required for the operations
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Assuming age_assur.mini and excel_data.mini have been read in previously
+
+# Adds the country column
+age_assur.mini$Country <- excel_data.mini$Country
+
+# Converting selected columns to numeric
+age_assur.copy <- age_assur.mini %>%
+  mutate_at(vars(1:15), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- age_assur.copy %>%
+  gather(key = "Website.Type", value = "Value", -Country)
+
+# Calculating overall median (just as an example; this is not used in plotting but follows the process of the original code)
+overall_median <- median(gathered_data$Value, na.rm = TRUE)
+
+# Calculating the median and standard deviation for each website type by country
+summary_stats <- gathered_data %>%
+  group_by(Country, Website.Type) %>%
+  summarise(
+    Median = median(Value, na.rm = TRUE),
+    StdDev = sd(Value, na.rm = TRUE)
+  )
+
+# Filter the summary_stats data for Australia, France, and India
+filtered_data <- summary_stats %>%
+  filter(Country %in% c("Australia", "France", "India"))
+
+# Setting the factor levels for Country to ensure the desired order
+filtered_data$Country <- factor(filtered_data$Country, levels = c("Australia", "France", "India"))
+
+# Plotting using ggplot2 with different colors for each country
+p <- ggplot(filtered_data, aes(x = Median, y = Website.Type, fill = Country)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle('Median Values by Website Type for Australia, France, and India') +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_line(color = "darkgray", size = 0.5),
+    panel.grid.minor = element_line(color = "darkgray", size = 0.25)
+  ) +
+  coord_cartesian(xlim = c(1, 5))  # Setting x-axis limits from 1 to 5
+
+# Print the plot
+print(p)
+
+```
+
+```{r Mean Values By Website Type}
+# Libraries required for the operations
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Assuming age_assur.mini and excel_data.mini have been read in previously
+
+# Adds the country column
+age_assur.mini$Country <- excel_data.mini$Country
+
+# Converting selected columns to numeric
+age_assur.copy <- age_assur.mini %>%
+  mutate_at(vars(1:15), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- age_assur.copy %>%
+  gather(key = "Website.Type", value = "Value", -Country)
+
+# Calculating overall median (just as an example; this is not used in plotting but follows the process of the original code)
+overall_meanm <- mean(gathered_data$Value, na.rm = TRUE)
+
+# Calculating the median and standard deviation for each website type by country
+summary_stats <- gathered_data %>%
+  group_by(Country, Website.Type) %>%
+  summarise(
+    Median = median(Value, na.rm = TRUE),
+    StdDev = sd(Value, na.rm = TRUE)
+  )
+
+# Filter the summary_stats data for Australia, France, and India
+filtered_data <- summary_stats %>%
+  filter(Country %in% c("Australia", "France", "India"))
+
+# Setting the factor levels for Country to ensure the desired order
+filtered_data$Country <- factor(filtered_data$Country, levels = c("Australia", "France", "India"))
+
+# Plotting using ggplot2 with different colors for each country
+p <- ggplot(filtered_data, aes(x = Median, y = Website.Type, fill = Country)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle('Median Values by Website Type for Australia, France, and India') +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_line(color = "darkgray", size = 0.5),
+    panel.grid.minor = element_line(color = "darkgray", size = 0.25)
+  ) +
+  coord_cartesian(xlim = c(1, 5))  # Setting x-axis limits from 1 to 5
+
+# Print the plot
+print(p)
+
+```
+
+
+
+The following needs to be changed/adapted for to include all three countries
+Column "Country" signifies the country (Australia, India, or France)
+```{r Specific values (median) for all three countries}
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+
+# Note: I made a massive mistake. Instead of nrow(excel_data.mini), I placed n.
+# Prepare and rename columns
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(total = sum(nrow(excel_data.mini), na.rm = TRUE), proportion = n / total * 100) %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, proportion) %>%
+  arrange(variable, value) %>%
+  spread(value, proportion) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ round(., 0))) %>%  # Round to 2 decimal points
+  mutate(across(where(is.numeric), ~ as.numeric(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+# Bold the highest values in each row
+value_counts <- value_counts %>%
+  rowwise() %>%
+  mutate(across(GovID:`Device-led Authentication`, ~ ifelse(. == max(c_across(GovID:`Device-led Authentication`), na.rm = TRUE) &
+                                                          . != 0, 
+                                                          paste0('<b>', ., '</b>'), 
+                                                          as.character(.))))
+
+# Convert back to data frame
+value_counts <- as.data.frame(value_counts)
+
+# Replace NAs with 0
+value_counts[is.na(value_counts)] <- 0
+
+# Print the table with xtable
+print(
+  xtable(value_counts, 
+         caption = paste0("<b>", country_name, "</b>", ":<b> Age Assurance Desired Methods Table</b><br>", "(% Comfortable With Each Method Type)")), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+```
+
+```{r 1s,2s,3s,4s,5s Histogram}
+
+
+# Assuming age_assur.mini and excel_data.mini have been read in previously
+
+# Adds the country column
+age_assur.mini$Country <- excel_data.mini$Country
+
+# Converting selected columns to numeric
+age_assur.copy <- age_assur.mini %>%
+  mutate_at(vars(1:15), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- age_assur.copy %>%
+  gather(key = "Website.Type", value = "Value", -Country)
+
+# Filter the gathered data for Australia, France, and India
+filtered_data <- gathered_data %>%
+  filter(Country %in% c("Australia", "France", "India"))
+
+# Plotting histograms for 1s, 2s, 3s, 4s, 5s for each website type and each country
+p <- ggplot(filtered_data, aes(x = Value, fill = Country)) +
+  geom_histogram(binwidth = 1, boundary = 0.5, position = "dodge", color = "black") +
+  facet_grid(Country ~ Website.Type, scales = "free_y") +
+  scale_x_continuous(breaks = seq(1, 5, by = 1)) +
+  labs(
+    title = 'Distribution of Likert-scale Responses by Website Type and Country',
+    x = 'Likert Scale Value',
+    y = 'Count'
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.background = element_blank(),
+    legend.position = "bottom",
+    axis.title.y = element_blank()
+  ) +
+  scale_fill_manual(values = c("Australia" = "blue", "France" = "red", "India" = "green"))
+
+# Print the plot
+print(p)
+```
+
+
+```{r like the chunk above but col 7:8}
+
+# Assuming age_assur.mini and excel_data.mini have been read in previously
+
+# Adds the country column
+age_assur.mini$Country <- excel_data.mini$Country
+
+# Converting selected columns (7 and 8) to numeric
+age_assur.copy <- age_assur.mini %>%
+  mutate_at(vars(7:8), as.numeric)
+
+# Gathering data for easier manipulation
+gathered_data <- age_assur.copy %>%
+  gather(key = "Website.Type", value = "Value", -Country)
+
+# Filter the gathered data for Australia, France, and India
+filtered_data <- gathered_data %>%
+  filter(Country %in% c("Australia", "France", "India"))
+
+# Plotting histograms for 1s, 2s, 3s, 4s, 5s for each website type and each country
+p <- ggplot(filtered_data, aes(x = Value, fill = Country)) +
+  geom_histogram(binwidth = 1, boundary = 0.5, position = "dodge", color = "black") +
+  facet_grid(Country ~ Website.Type, scales = "free_y") +
+  scale_x_continuous(breaks = seq(1, 5, by = 1)) +
+  labs(
+    title = 'Distribution of Likert-scale Responses by Website Type and Country',
+    x = 'Likert Scale Value',
+    y = 'Count'
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    strip.background = element_blank(),
+    legend.position = "bottom",
+    axis.title.y = element_blank()
+  ) +
+  scale_fill_manual(values = c("Australia" = "blue", "France" = "red", "India" = "green"))
+
+# Print the plot
+print(p)
+```
+
+
+## Binary Proportions Test
+
+```{r Example Contingency Tables}
+# Step 1: Create the Contingency Table
+# We represent the data as a matrix
+data_matrix <- matrix(c(30, 10, 20, 40), 
+                      nrow = 2, 
+                      byrow = TRUE,
+                      dimnames = list(
+                        "Smoking Status" = c("Smokes", "Non-Smoker"),
+                        "Lung Disease" = c("Yes", "No")
+                      ))
+
+# Display the contingency table
+print(data_matrix)
+
+# Step 2: Perform the Chi-Square Test
+chi_square_test <- chisq.test(data_matrix)
+
+# Display the results of the Chi-Square Test
+print(chi_square_test)
+
+# Step 3: Extract components of the Chi-Square Test result
+chi_square_value <- chi_square_test$statistic
+p_value <- chi_square_test$p.value
+df <- chi_square_test$parameter
+
+# Print the extracted values
+cat("Chi-Square Statistic:", chi_square_value, "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("P-value:", p_value, "\n")
+
+
+```
+
+```{r Absolute Values of GovID support}
+library(dplyr)
+library(tidyr)
+library(xtable)
+
+# Select the specific columns
+selected_columns <- excel_data.mini[, 36:50]
+
+# Convert the dataframe to long format and separate values, including NA counting
+long_data <- selected_columns %>%
+  mutate_all(as.character) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "value") %>%
+  separate_rows(value, sep = ",") %>%
+  filter(value %in% c("1", "2", "3", "4", "5", NA_character_))
+
+# Prepare and rename columns
+value_counts <- long_data %>%
+  group_by(variable, value) %>%
+  tally() %>%
+  mutate(variable = case_when(
+    variable == "adult content" ~ "Adult Content/Pornography",
+    variable == "anon social" ~ "Anonymous Social Media",
+    variable == "dating" ~ "Dating Apps",
+    variable == "firearms" ~ "Firearms/Ammunition Sales",
+    variable == "gambling" ~ "Gambling",
+    variable == "gaming" ~ "Online Gaming Sites",
+    variable == "gig econ" ~ "Gig Economy Platforms",
+    variable == "mature" ~ "Mature Literature",
+    variable == "news" ~ "News",
+    variable == "non social" ~ "Non-anonymous Social Media",
+    variable == "pharmacies" ~ "Online Pharmacies",
+    variable == "subscription" ~ "Subscription Services",
+    variable == "vacation" ~ "Vacation Rental Sites",
+    variable == "vaping" ~ "Tobacco/Vaping Sales",
+    variable == "VR" ~ "Virtual Reality Worlds",
+    TRUE ~ variable
+  )) %>%
+  select(variable, value, n) %>%
+  arrange(variable, value) %>%
+  spread(value, n) %>%
+  replace(is.na(.), 0) %>%
+  mutate(across(where(is.numeric), ~ as.integer(.))) %>%
+  rename(
+    'Website Type' = variable,
+    "GovID" = '1',
+    "Facial Estimation" = '2',
+    'Credit Card' = '3',
+    'Self-Declaration' = '4',
+    'Device-led Authentication' = '5',
+    'No Opinion' = '<NA>'
+  )
+
+# Bold the highest values in each row
+value_counts <- value_counts %>%
+  rowwise() %>%
+  mutate(across(GovID:`Device-led Authentication`, ~ ifelse(. == max(c_across(GovID:`Device-led Authentication`), na.rm = TRUE) &
+                                                          . != 0, 
+                                                          paste0('<b>', ., '</b>'), 
+                                                          as.character(.))))
+
+# Convert back to data frame
+value_counts <- as.data.frame(value_counts)
+
+# Replace NAs with 0
+value_counts[is.na(value_counts)] <- 0
+
+# Print the table with xtable
+print(
+  xtable(value_counts, 
+         caption = paste0("<b>", country_name, "</b>", ":<b> Age Assurance Desired Methods Table</b><br>", "(Number Comfortable With Each Method Type)")), 
+  caption.placement = "top", 
+  type = "html", 
+  file = "value_counts_table.html",
+  sanitize.text.function = identity  # This option allows HTML code to be interpreted
+)
+
+```
+
+```{r Contingency Table for AUS,FRA, and IND}
+# Survey results data
+survey_data <- data.frame(
+  Country = rep(c("Australia", "France", "India"), each = 2),
+  ComfortLevel = c("Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable"),
+  Count = c(69, 80, 97, 92, 86, 49)
+)
+
+# Comfortable with GovID on Pornographic Websites
+# NotComfortable with GovID on Pornographic Websites
+
+# Create contingency table
+contingency_table <- xtabs(Count ~ Country + ComfortLevel, data = survey_data)
+
+# Print contingency table
+print("Contingency Table:")
+print(contingency_table)
+
+# Perform chi-square test to see if there's a significant difference
+chi_square_test <- chisq.test(contingency_table)
+
+# Print the results of the chi-square test
+print("Chi-Square Test Results:")
+print(chi_square_test)
+
+```
+
+```{r Contingency Tables two at a time}
+
+
+# Load the xtable package
+library(xtable)
+
+# Survey results data
+survey_data <- data.frame(
+  Country = rep(c("Australia", "France", "India"), each = 2),
+  ComfortLevel = c("Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable"),
+  Count = c(69, 80, 97, 92, 86, 49)
+)
+
+# Create contingency table
+contingency_table <- xtabs(Count ~ Country + ComfortLevel, data = survey_data)
+
+# Print contingency table
+print("Contingency Table:")
+print(contingency_table)
+
+# Convert contingency table to a data frame for xtable
+contingency_df <- as.data.frame.matrix(contingency_table)
+contingency_xtable <- xtable(contingency_df, caption = "Contingency Table for Country and Comfort Level")
+
+# Perform chi-square test to see if there's a significant difference for all countries together
+chi_square_test <- chisq.test(contingency_table)
+
+# Print the results of the chi-square test for all countries together
+print("Chi-Square Test Results for all countries together:")
+print(chi_square_test)
+
+# Separate pairwise comparisons
+# Australia vs France
+aus_fra_data <- survey_data[survey_data$Country %in% c("Australia", "France"), ]
+contingency_aus_fra <- xtabs(Count ~ Country + ComfortLevel, data = aus_fra_data)
+chi_square_aus_fra <- chisq.test(contingency_aus_fra)
+
+# Australia vs India
+aus_ind_data <- survey_data[survey_data$Country %in% c("Australia", "India"), ]
+contingency_aus_ind <- xtabs(Count ~ Country + ComfortLevel, data = aus_ind_data)
+chi_square_aus_ind <- chisq.test(contingency_aus_ind)
+
+# France vs India
+fra_ind_data <- survey_data[survey_data$Country %in% c("France", "India"), ]
+contingency_fra_ind <- xtabs(Count ~ Country + ComfortLevel, data = fra_ind_data)
+chi_square_fra_ind <- chisq.test(contingency_fra_ind)
+
+# Collect p-values
+p_values <- data.frame(
+  Comparison = c("Australia vs France", "Australia vs India", "France vs India"),
+  P_Value = c(chi_square_aus_fra$p.value, chi_square_aus_ind$p.value, chi_square_fra_ind$p.value)
+)
+
+# Print p-values table
+print("Pairwise Chi-Square Test P-Values:")
+print(p_values)
+
+# Create xtable for p-values
+p_values_xtable <- xtable(p_values, caption = "Pairwise Chi-Square Test P-Values")
+
+# Print xtables
+print(contingency_xtable, type = "html")
+print(p_values_xtable, type = "html")
+
+```
+
+```{r Contingency Tables Between Countries}
+# Step 1: Create the Contingency Table
+# We represent the data as a matrix
+data_matrix <- matrix(c(30, 10, 20, 40), 
+                      nrow = 2, 
+                      byrow = TRUE,
+                      dimnames = list(
+                        "Smoking Status" = c("Smokes", "Non-Smoker"),
+                        "Lung Disease" = c("Yes", "No")
+                      ))
+
+# Display the contingency table
+print(data_matrix)
+
+# Step 2: Perform the Chi-Square Test
+chi_square_test <- chisq.test(data_matrix)
+
+# Display the results of the Chi-Square Test
+print(chi_square_test)
+
+# Step 3: Extract components of the Chi-Square Test result
+chi_square_value <- chi_square_test$statistic
+p_value <- chi_square_test$p.value
+df <- chi_square_test$parameter
+
+# Print the extracted values
+cat("Chi-Square Statistic:", chi_square_value, "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("P-value:", p_value, "\n")
+
+
+```
+
+```{r Between Countries (but only two at a time)}
+# Survey results data
+survey_data <- data.frame(
+  Country = rep(c("Australia", "France", "India"), each = 2),
+  ComfortLevel = c("Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable", "Comfortable", "Not Comfortable"),
+  Count = c(69, 80, 97, 92, 86, 49)
+)
+
+# Function to perform chi-square test between two countries
+perform_chi_square_test <- function(data, country1, country2) {
+  subset_data <- data %>% filter(Country %in% c(country1, country2))
+  contingency_table <- xtabs(Count ~ Country + ComfortLevel, data = subset_data)
+  test_result <- chisq.test(contingency_table)
+  return(list(contingency_table = contingency_table, test_result = test_result))
+}
+
+# Perform chi-square test for Australia vs France
+test_Aus_Fra <- perform_chi_square_test(survey_data, "Australia", "France")
+print("Contingency Table: Australia vs France")
+print(test_Aus_Fra$contingency_table)
+print("Chi-Square Test Results: Australia vs France")
+print(test_Aus_Fra$test_result)
+
+# Perform chi-square test for Australia vs India
+test_Aus_Ind <- perform_chi_square_test(survey_data, "Australia", "India")
+print("Contingency Table: Australia vs India")
+print(test_Aus_Ind$contingency_table)
+print("Chi-Square Test Results: Australia vs India")
+print(test_Aus_Ind$test_result)
+
+# Perform chi-square test for France vs India
+test_Fra_Ind <- perform_chi_square_test(survey_data, "France", "India")
+print("Contingency Table: France vs India")
+print(test_Fra_Ind$contingency_table)
+print("Chi-Square Test Results: France vs India")
+print(test_Fra_Ind$test_result)
+
+```
+
+```{r Binary Proportions Test}
+
+# Example data
+X <- c(1, 0, 1, 0, 1, 1, 0, 0, 1, 0)
+Y <- c(0, 0, 1, 0, 1, 1, 1, 0, 1, 0)
+
+# Creating a contingency table
+contingency_table <- table(X, Y)
+
+# Performing the chi-squared test
+chi_test_result <- chisq.test(contingency_table)
+
+# Displaying the test result
+print(chi_test_result)
+
+# Performing Fisher's Exact Test
+fisher_test_result <- fisher.test(contingency_table)
+
+# Displaying the test result
+print(fisher_test_result)
+
+
+```
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Recode Value to positive and negative for diverging bar chart
+filtered_data <- filtered_data %>%
+  mutate(
+    Value = as.numeric(as.character(Value)),
+    Response = case_when(
+      Value <= 2 ~ "Negative",
+      Value == 3 ~ "Neutral",
+      Value >= 4 ~ "Positive"
+    ),
+    Response = factor(Response, levels = c("Negative", "Neutral", "Positive"))
+  )
+
+# Summarize data
+summary_data <- filtered_data %>%
+  group_by(Country, Website.Type, Response) %>%
+  summarize(Count = n()) %>%
+  ungroup() %>%
+  group_by(Country, Website.Type) %>%
+  mutate(Proportion = Count / sum(Count))
+
+# Adjust proportions for plotting
+summary_data <- summary_data %>%
+  mutate(
+    AdjustedProportion = case_when(
+      Response == "Negative" ~ -Proportion,
+      TRUE ~ Proportion
+    )
+  )
+
+# Plot diverging stacked bar chart
+p <- ggplot(summary_data, aes(x = Website.Type, y = AdjustedProportion, fill = Response)) +
+  geom_bar(stat = "identity", color = "black") +
+  facet_wrap(~ Country, ncol = 1) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(), limits = c(-1, 1)) +
+  labs(
+    title = 'Diverging Responses by Website Type and Country',
+    x = 'Website Type',
+    y = 'Proportion',
+    fill = 'Response'
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+
+# Print the plot
+print(p)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,111 @@
+---
+title: "Global Code (R Markdown)"
+author: "J.M."
+date: "2024-08-13"
+output: html_document
+---
+
+
+
+
+```{r Libraries}
+library(readxl)
+library(ISLR2) 
+
+library(dplyr)
+library(tidyr)
+library(multcompView)
+library(ggsignif)
+library(stringr)
+library(ggplot2)
+library(AER)
+
+library(gt)
+library(webshot2)
+
+```
+
+
+```{r datasets setup}
+
+#The datasets of Australia, India, Singapore, and United States respectively:
+AUS.df <- read_excel("Datasets/Australia_ Age Assurance - Prolific_August 12, 2024_16.24.xlsx")
+#AUS.df <- read_excel("Datasets/August 7 Datasets/Australia_ Age Assurance_August 7, 2024_15.47.xlsx")
+FRA.df <- read_excel("Datasets/France_ Age Assurance - Prolific -_August 12, 2024_16.12.xlsx")
+IND.df <- read_excel("Datasets/India_ Age Assurance - Prolific_August 12, 2024_16.25.xlsx")
+#IND.df <- read_excel("Datasets/August 8 Datasets/India_ Age Assurance_August 8, 2024_09.05.xlsx")
+SGP.df <- read_excel("Datasets/Singapore_ Age Assurance_August 5, 2024_13.11.xlsx")
+USA.df <- read_excel("Datasets/USA_ Age Assurance_August 5, 2024_13.02.xlsx")
+
+#############
+
+# Store datasets in a named list
+datasets <- list(
+  "Australia" = AUS.df,
+  "France" = FRA.df,
+  "India" = IND.df,
+  "Singapore" = SGP.df,
+  "United States" = USA.df
+)
+
+# Function to get the country name based on the dataframe
+get_country_name <- function(df, datasets) {
+  country_names <- names(datasets)
+  for (name in country_names) {
+    if (identical(datasets[[name]], df)) {
+      return(name)
+    }
+  }
+  return(NA)
+}
+
+```
+
+
+Important Chunk:
+```{r change countries (e.g., use this to change the country we're observing)}
+
+# Choices: AUS.df, IND.df, SGP.df, USA.df   ↓↓↓↓
+# Change this to the desired dataset
+excel_data <- FRA.df  # The dataset you want to use
+
+# Automatically update the country name
+country_name <- get_country_name(excel_data, datasets)
+
+
+# Get today's date and current date-time
+current_date <- Sys.Date()
+current_time <- Sys.time()
+
+# Format the current date and time to "Month Day, Year" format
+current_date_formatted <- format(current_date, "%B %d, %Y")
+current_time_formatted <- format(current_time, "%B %d, %Y %H:%M:%S")
+
+
+# Print to confirm
+print(paste("Country:", country_name, "; Date:", current_date_formatted))
+
+
+```
+
+```{r data prep}
+library(readxl)
+
+
+
+#Excludes first row, which is dedicated to questions. And includes only those who gave consent.
+excel_data.mini <- excel_data[-1,] %>% filter(as.numeric(`Q2`) == 1.0) #Filters for consenting; Skips the 1st row (which is a question for the survey participant) participants
+excel_data.mini <- excel_data.mini %>% filter(as.numeric(`attn`) == 3.0) #Filters for attention
+
+age_assur.mini <- excel_data.mini[, 19:33] #ATTITUDES ABOUT AGE ASSURANCE TECHNOLOGY; selects columns 19 to 33, five star rating.
+
+
+
+#Renames two columns
+age_assur.mini <- age_assur.mini %>%
+  rename(
+    News = identity.att_15,
+    `Mature Literature` = identity.att_16
+  )
+
+```
