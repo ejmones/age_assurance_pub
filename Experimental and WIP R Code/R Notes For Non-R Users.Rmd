@@ -1,0 +1,190 @@
+---
+title: "R Notes For (Mostly) Non-R Users"
+output: html_document
+date: "2024-07-30"
+---
+
+#July 30: Brainstorm different visualizations, write notes for non-R users, write notes for methadology.
+
+#Family Wise Error Rate (FWER)
+```{r FWER}
+
+#Family Wise Error Rate (FWER)
+#If the null hypothesis is true for each of m independent hypothesis tests, then the FWER = 1 - (1 - α) ^ m
+# Ignore lines 5-23
+######
+#Compute the FWER for m = 1,...,5 & α = 0.05, 0.01, and 0.001
+n <- 5 # n = number of independent hypothesis tests; using 5 for 5 countries
+m <- 1:n # m = 1,...,n
+fwe1 <- 1 - (1 - 0.05)^m # α = 0.05
+fwe2 <- 1 - (1 - 0.01)^m # α = 0.01
+fwe3 <- 1 - (1 - 0.001)^m # α = 0.001
+
+
+
+###
+par(mfrow = c(1, 1))
+plot(m, fwe1, type = "l", log = "x", ylim = c(0, 1), col = 2,
+     ylab = "Family - Wise Error Rate",
+     xlab = "Number of Hypotheses")
+lines(m, fwe2, col = 4)
+lines(m, fwe3, col = 3)
+abline(h = 0.05, lty = 2)
+######
+
+
+###
+library(ISLR2)
+country.mini <- Fund[, 1:5] #Note: Once you have the data, replace Fund with country data. I'm only using the Fund dataset as a placeholder
+
+t.test(country.mini[, 1], mu = 0) #Conduct one-sample t-test for each of the five countries in the countries dataset.
+country.pvalue <- rep(0, 5)
+for (i in 1:5)
+  country.pvalue[i] <- t.test(country.mini[, i], mu = 0)$p.value
+country.pvalue #Note: We cannot simply reject a hypothesis just because p-values may be low for one country and high for another since this would fail to account for the multiple testing we have performed.
+
+
+
+####
+
+```
+```{r ANOVA}
+
+# We'll use the p.adjust() function to correct p-values for multiple testing.
+# If the adjusted p-value for a given hypothesis is less than or equal to α, then that hypothesis can be rejected while maintaining a FWER of no more than α.
+###
+p.adjust(country.pvalue, method = "bonferroni")
+pmin(country.pvalue * 5, 1)
+###
+p.adjust(country.pvalue, method = "holm")
+###
+apply(country.mini, 2, mean)
+###
+t.test(country.mini[, 1], country.mini[, 2], paired = T) # Use this to compare between country 1 and country 2. If p < 0.05, this suggests a statistically significant difference.
+
+### Use Tukey to uses the output of an ANOVA regression model as an input, which is essentially a linear regression in which all of the predictors are qualitative
+returns <- as.vector(as.matrix(country.mini))
+manager <- rep(c("1", "2", "3", "4", "5"), rep(50, n))
+a1 <- aov(returns ~ manager)
+TukeyHSD(x = a1) 
+###
+
+
+plot(TukeyHSD(x = a1)) #If all of the confidence intervals overlap zero in this plot, none of the differences among the groups are statistically significant!
+
+
+```
+#A minor problem with using the Family Wise Error Rate (FWER) is that it's considered less appropropriate for use when there are many variables involved. Typically FWER would be more favorable for around 5 variables, but given we'll be testing 15 to 60 variables. The user of FDR correction would be more appropriate.
+
+
+
+#False Discovery Rate
+```{r FDR correction}
+
+## The False Discovery Rate
+#FDR: The expected fraction of rejected null hypotheses that are actually false positives
+
+###
+library(ISLR2)
+
+n <- 14 * 5 # Number of websites * number of countries
+websites.pvalues <- rep(0, n)
+for (i in 1:n)
+  websites.pvalues[i] <- t.test(Fund[, i], mu = 0)$p.value #Replace "Fund" with websites from multiple countries once dataset is received
+
+
+
+###
+q.values.BH <- p.adjust(websites.pvalues, method = "BH")
+q.values.BH[1:10]  # The q-values output by the Benjamini-Hochberg procedure can be interpreted as the smallest FDR threshold at which we would reject a particular null hypothesis.
+# For instance, a q-value of 0.1 indicates that we can reject the corresponding null hypothesis at an FDR of 10% or greater, but that we cannot reject the null hypothesis at an FDR below 10%
+
+
+
+###
+sum(q.values.BH <= .1) #In this case: 67 of the 70 fund managers beat the market at a FDR of 10%. 10% of the 67 are likely to be false discoveries. Later we can adapt this to compare means between websites.
+
+
+###
+sum(websites.pvalues <= (0.1 / n))
+###
+ps <- sort(websites.pvalues)
+m <- length(websites.pvalues)
+q <- 0.1
+wh.ps <- which(ps < q * (1:m) / m)
+if (length(wh.ps) >0) {
+  wh <- 1:max(wh.ps)
+} else {
+  wh <- numeric(0)
+}
+
+
+###
+plot(ps, log = "xy", ylim = c(4e-6, 1), ylab = "P-Value",
+     xlab = "Index", main = "")
+points(wh, ps[wh], col = 4)
+abline(a = 0, b = (q / m), col = 2, untf = TRUE) #The orange line indicate the p-value thresholds corresponding to FDR control.
+abline(h = 0.1 / n, col = 3)
+
+
+```
+
+
+#Sankey plot
+```{r Sankey}
+
+install.packages("networkD3")
+library(networkD3)
+
+
+
+
+```
+
+
+#experimental
+```{r SOme}
+# Using the provided data
+ratings <- age_assur.mini$Online.gaming.sites  
+
+# Calculate statistics
+rating_mean <- mean(ratings)
+halfway_min_mean <- (min(ratings) + rating_mean) / 2
+halfway_max_mean <- (max(ratings) + rating_mean) / 2
+rating_median <- median(ratings)
+
+# Prepare the boxplot data frame
+boxplot_data <- list(
+  stats = matrix(
+    c(
+      min(ratings),            # Minimum
+      halfway_min_mean,        # First custom quartile (Q1) 
+      rating_median,           # Median
+      halfway_max_mean,        # Third custom quartile (Q3)
+      max(ratings)             # Maximum
+    ), 
+    ncol = 1
+  ),
+  n = length(ratings),
+  conf = NA,
+  out = NA,
+  group = NA,
+  names = "Online Gaming Sites"
+)
+
+# Generate the customized boxplot
+bxp(boxplot_data, main="Customized Boxplot of 5-Star Ratings", ylab="Ratings", ylim=c(0, 6))
+
+
+# Add legend to the plot
+legend("topright", legend=c("Min", "Halfway Min-Mean", "Median", "Halfway Mean-Max", "Max"),
+       col=c("black"), pch=c(NA), fill=c("gray", rep(NA, 4)), border=c("black"))
+
+```
+
+## Plots
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
